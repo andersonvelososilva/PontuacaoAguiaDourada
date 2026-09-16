@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block title %}Consulta de Pontuação — {{ NOME_DO_CLUBE }}{% endblock %}
+
+{% block content %}
+<!-- Hero Header Section -->
+<div class="hero-banner text-center">
+    <div class="container">
+        <h1 class="hero-title"><i class="bi bi-award-fill text-warning me-2"></i>Pontuação dos Desbravadores</h1>
+        <p class="hero-subtitle mb-0">Acompanhe seu desempenho, presença e conquistas no clube.</p>
+    </div>
+</div>
+
+<div class="container px-3">
+    <!-- Search Bar & Filters Section -->
+    <div class="search-container mb-4">
+        <form method="GET" action="{% url 'pontuacao:index' %}" id="search-form">
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                <div class="row g-2 align-items-center">
+                    <div class="col-12 col-md-7 position-relative">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" 
+                               name="q" 
+                               id="search-input"
+                               class="form-control search-input" 
+                               placeholder="Digite o nome do desbravador..." 
+                               value="{{ query_q }}"
+                               autocomplete="off">
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <select name="unidade" id="unidade-select" class="form-select search-input py-2" onchange="document.getElementById('search-form').submit();">
+                            <option value="">Todas as Unidades</option>
+                            {% for u in unidades %}
+                                <option value="{{ u.id }}" {% if unidade_selecionada == u.id|stringformat:"i" %}selected{% endif %}>
+                                    Unidade {{ u.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Desbravadores List Grid -->
+    <div class="row g-3" id="desbravadores-grid">
+        {% for d in desbravadores %}
+            <div class="col-12 col-sm-6 col-lg-4 desbravador-card-item" 
+                 data-nome="{{ d.nome|lower }}" 
+                 data-unidade="{{ d.unidade.nome|lower }}">
+                <div class="card card-desbravador h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h2 class="h5 fw-bold mb-1 text-dark">{{ d.nome }}</h2>
+                            <span class="badge badge-unidade">
+                                <i class="bi bi-flag-fill me-1 text-primary"></i>Unidade {{ d.unidade.nome }}
+                            </span>
+                        </div>
+                        <div class="text-end">
+                            {% if d.total_pontos_calc > 0 %}
+                                <span class="badge bg-success text-white badge-pontos-lg shadow-sm">
+                                    +{{ d.total_pontos_calc }} <small style="font-size: 0.65em;">pts</small>
+                                </span>
+                            {% elif d.total_pontos_calc < 0 %}
+                                <span class="badge bg-danger text-white badge-pontos-lg shadow-sm">
+                                    {{ d.total_pontos_calc }} <small style="font-size: 0.65em;">pts</small>
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary text-white badge-pontos-lg shadow-sm">
+                                    0 <small style="font-size: 0.65em;">pts</small>
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                        <small class="text-muted"><i class="bi bi-clock-history me-1"></i>Atualizado</small>
+                        <a href="{% url 'pontuacao:detalhe' d.pk %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
+                            Ver Extrato <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <div class="p-4 rounded-4 bg-white shadow-sm d-inline-block" style="max-width: 450px;">
+                    <i class="bi bi-search text-muted display-4 mb-3 d-block"></i>
+                    <h3 class="h5 fw-bold text-secondary">Nenhum desbravador encontrado</h3>
+                    <p class="text-muted small mb-3">Tente pesquisar por outro nome ou selecionar uma unidade diferente.</p>
+                    <a href="{% url 'pontuacao:index' %}" class="btn btn-custom-primary btn-sm">Limpar Filtros</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filtro instantâneo no front-end para resposta imediata ao digitar
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('search-input');
+        const gridItems = document.querySelectorAll('.desbravador-card-item');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase().trim();
+                gridItems.forEach(item => {
+                    const nome = item.getAttribute('data-nome') || '';
+                    const unidade = item.getAttribute('data-unidade') || '';
+                    if (nome.includes(term) || unidade.includes(term)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

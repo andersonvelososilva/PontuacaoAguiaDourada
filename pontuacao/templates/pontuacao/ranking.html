@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Ranking — {{ NOME_DO_CLUBE }}{% endblock %}
+
+{% block content %}
+<div class="hero-banner text-center">
+    <div class="container">
+        <h1 class="hero-title"><i class="bi bi-trophy-fill text-warning me-2"></i>Ranking dos Desbravadores</h1>
+        <p class="hero-subtitle mb-0">Classificação geral baseada nos pontos acumulados.</p>
+    </div>
+</div>
+
+<div class="container py-4 px-3" style="max-width: 800px;">
+    <div class="card border-0 shadow-sm rounded-4 bg-white p-3 p-md-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="text-center" style="width: 70px;">Pos.</th>
+                        <th scope="col">Desbravador</th>
+                        <th scope="col">Unidade</th>
+                        <th scope="col" class="text-end">Pontuação Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in ranking %}
+                        <tr>
+                            <td class="text-center fw-bold fs-5">
+                                {% if forloop.counter == 1 %}
+                                    <span class="badge bg-warning text-dark rounded-circle p-2 shadow-sm" title="1º Lugar"><i class="bi bi-award-fill"></i></span>
+                                {% elif forloop.counter == 2 %}
+                                    <span class="badge bg-secondary text-white rounded-circle p-2 shadow-sm" title="2º Lugar"><i class="bi bi-award-fill"></i></span>
+                                {% elif forloop.counter == 3 %}
+                                    <span class="badge bg-danger text-white rounded-circle p-2 shadow-sm" title="3º Lugar"><i class="bi bi-award-fill"></i></span>
+                                {% else %}
+                                    <span class="text-muted fs-6">#{{ forloop.counter }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'pontuacao:detalhe' item.pk %}" class="fw-bold text-dark text-decoration-none">
+                                    {{ item.nome }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge badge-unidade">Unidade {{ item.unidade.nome }}</span>
+                            </td>
+                            <td class="text-end fw-extrabold">
+                                {% if item.total_pontos_calc > 0 %}
+                                    <span class="text-success fs-5 fw-bold">+{{ item.total_pontos_calc }} pts</span>
+                                {% elif item.total_pontos_calc < 0 %}
+                                    <span class="text-danger fs-5 fw-bold">{{ item.total_pontos_calc }} pts</span>
+                                {% else %}
+                                    <span class="text-secondary fs-6">0 pts</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">
+                                Nenhum desbravador ativo cadastrado no ranking.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
