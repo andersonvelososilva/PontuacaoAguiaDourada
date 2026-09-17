@@ -64,7 +64,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
-# Uses DATABASE_URL from .env or defaults to local SQLite3
 DEFAULT_DB_URL = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 DATABASES = {
     'default': config('DATABASE_URL', default=DEFAULT_DB_URL, cast=dj_database_url.parse)
@@ -99,6 +98,15 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files (Uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Authentication URLs
+LOGIN_URL = 'pontuacao:login'
+LOGIN_REDIRECT_URL = 'pontuacao:perfil'
+LOGOUT_REDIRECT_URL = 'pontuacao:index'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

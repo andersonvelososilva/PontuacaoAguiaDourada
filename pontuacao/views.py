@@ -1,79 +1,106 @@
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Sum, Q
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Sum
 from django.db.models.functions import Coalesce
-from django.views.generic import ListView, DetailView
-from django.conf import settings
-from .models import Desbravador, Unidade, Pontuacao
+from django.views.generic import TemplateView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseForbidden
+from .models import Desbravador, Pontuacao, ConfiguracaoSistema
 
-class DesbravadorListView(ListView):
+class PublicHomeView(TemplateView):
     """
-    Página inicial pública com busca em tempo real/filtro e lista de desbravadores.
+    Página inicial pública. Exibe o Top 3 e/ou Ranking Geral estritamente
+    de acordo com as configurações salvas no banco de dados pela Diretoria.
     """
-    model = Desbravador
     template_name = 'pontuacao/index.html'
-    context_object_name = 'desbravadores'
-
-    def get_queryset(self):
-        # Apenas desbravadores ativos são exibidos publicamente por padrão
-        queryset = Desbravador.objects.filter(ativo=True).select_related('unidade').annotate(
-            total_pontos_calc=Coalesce(Sum('pontuacoes__pontos'), 0)
-        )
-        
-        # Filtro por busca textual (nome ou nome da unidade)
-        query = self.request.GET.get('q', '').strip()
-        if query:
-            queryset = queryset.filter(
-                Q(nome__icontains=query) | Q(unidade__nome__icontains=query)
-            )
-
-        # Filtro por unidade específica
-        unidade_id = self.request.GET.get('unidade')
-        if unidade_id and unidade_id.isdigit():
-            queryset = queryset.filter(unidade_id=int(unidade_id))
-
-        return queryset.order_by('nome')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['unidades'] = Unidade.objects.filter(ativo=True)
-        context['query_q'] = self.request.GET.get('q', '')
-        context['unidade_selecionada'] = self.request.GET.get('unidade', '')
-        return context
+        config = ConfiguracaoSistema.get_solo()
+        context['config'] = config
 
-
-class DesbravadorDetailView(DetailView):
-    """
-    Página de detalhes públicos do desbravador e seu histórico de pontuação.
-    """
-    model = Desbravador
-    template_name = 'pontuacao/detalhe.html'
-    context_object_name = 'desbravador'
-
-    def get_queryset(self):
-        return Desbravador.objects.filter(ativo=True).select_related('unidade')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        desbravador = self.object
-        
-        # Exibe o histórico se a configuração permitir
-        if getattr(settings, 'EXIBIR_HISTORICO_PUBLICO', True):
-            context['historico'] = desbravador.pontuacoes.select_related('criado_por').order_by('-data_hora', '-created_at')
+        # TOP 3 — Omitido da view se desativado pela diretoria
+        if config.top3_publico:
+            top3_qs = Desbravador.objects.filter(ativo=True).select_related('unidade').annotate(
+                total_pontos_calc=Coalesce(Sum('pontuacoes__pontos'), 0)
+            ).order_by('-total_pontos_calc', 'nome')[:3]
+            context['top3_list'] = list(top3_qs)
         else:
-            context['historico'] = None
-            
+            context['top3_list'] = None
+
+        # RANKING GERAL — Omitido da view se desativado pela diretoria
+        if config.ranking_publico:
+            ranking_qs = Desbravador.objects.filter(ativo=True).select_related('unidade').annotate(
+                total_pontos_calc=Coalesce(Sum('pontuacoes__pontos'), 0)
+            ).order_by('-total_pontos_calc', 'nome')
+            context['ranking_list'] = list(ranking_qs)
+        else:
+            context['ranking_list'] = None
+
         return context
 
 
-class RankingView(ListView):
+class PerfilDesbravadorView(LoginRequiredMixin, TemplateView):
     """
-    Visualização simples e opcional de ranking por pontuação.
+    Perfil privado do desbravador logado.
+    REGRA DE SEGURANÇA NO BACKEND: Desbravadores comuns só podem visualizar
+    o seu próprio perfil. Tentativas de acessar dados de terceiros são bloqueadas.
     """
-    model = Desbravador
-    template_name = 'pontuacao/ranking.html'
-    context_object_name = 'ranking'
+    template_name = 'pontuacao/perfil.html'
 
-    def get_queryset(self):
-        return Desbravador.objects.filter(ativo=True).select_related('unidade').annotate(
-            total_pontos_calc=Coalesce(Sum('pontuacoes__pontos'), 0)
-        ).order_by('-total_pontos_calc', 'nome')
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+
+        # Diretoria (staff/superuser) possui permissão de consulta ampla
+        if request.user.is_staff or request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+
+        # Desbravador comum deve obrigatoriamente possuir perfil associado
+        if not hasattr(request.user, 'desbravador') or not request.user.desbravador.ativo:
+            return HttpResponseForbidden("Acesso restrito: Sua conta não está vinculada a um perfil de desbravador ativo.")
+
+        # Impedir tentativa de passagem de ID de terceiros na URL/Query String
+        target_id = request.GET.get('id')
+        if target_id and str(target_id) != str(request.user.desbravador.id):
+            return HttpResponseForbidden("Segurança: Você não tem permissão para visualizar o perfil de outro desbravador.")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        # Se for Diretoria e informou id na query string
+        if (user.is_staff or user.is_superuser) and self.request.GET.get('id'):
+            desbravador_id = self.request.GET.get('id')
+            desbravador = get_object_or_404(Desbravador, pk=desbravador_id)
+        elif hasattr(user, 'desbravador'):
+            desbravador = user.desbravador
+        else:
+            # Caso seja staff sem perfil de desbravador associado
+            desbravador = Desbravador.objects.filter(ativo=True).first()
+
+        context['desbravador'] = desbravador
+        if desbravador:
+            context['historico'] = desbravador.pontuacoes.select_related('criado_por').order_by('-data_hora', '-created_at')
+            context['total_pontos'] = desbravador.total_pontos
+        else:
+            context['historico'] = []
+            context['total_pontos'] = 0
+
+        return context
+
+
+class CustomLoginView(LoginView):
+    """
+    Tela de login responsiva para Desbravadores e Diretoria.
+    """
+    template_name = 'pontuacao/login.html'
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        user = self.request.user
+        if user.is_staff or user.is_superuser:
+            return '/admin/'
+        return '/perfil/'

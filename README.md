@@ -1,20 +1,23 @@
 # 🏆 Sistema Web de Pontuação do Clube de Desbravadores
 
-Aplicação web responsiva, simples e eficiente desenvolvida em **Python** e **Django** para consulta pública de pontuação dos desbravadores e gestão administrativa do clube.
+Aplicação web responsiva, simples e extremamente segura desenvolvida em **Python** e **Django** para gestão administrativa da Diretoria e consulta de pontuação individual dos Desbravadores.
 
 ---
 
 ## 📌 1. O que é o Projeto?
 
-O **Sistema Web de Pontuação do Clube de Desbravadores** permite que os desbravadores acompanhem em tempo real a sua pontuação acumulada e o seu extrato de pontos pelo celular ou computador.
+O **Sistema Web de Pontuação do Clube de Desbravadores** permite que a diretoria gerencie a pontuação e os membros do clube, enquanto os desbravadores consultam de forma privativa e segura apenas o seu próprio extrato e perfil.
 
 ### Principais Recursos:
-- **Consulta Pública Instantânea**: Busca rápida por nome ou filtro por unidade.
-- **Extrato Detalhado de Pontos**: Transparência de onde veio cada ponto (+ para presenças/especialidades, - para atrasos/indiscipilina).
-- **Cálculo de Pontuação 100% Derivado**: O total é calculado no backend através do histórico (`Sum('pontos')`), sem edições manuais arriscadas.
-- **Preservação de Dados**: Desbravadores inativos deixam de aparecer na consulta pública sem apagar o histórico acumulado.
-- **Painel Administrativo Completo**: Gerenciamento facilitado através do Django Admin nativo.
-- **PWA (Progressive Web App)**: Suporte para instalação na tela inicial de celulares Android e iOS.
+- **Perfil Privado do Desbravador (`/perfil/`)**: Acesso restrito via login ao próprio perfil com foto, unidade, pontuação total acumulada e extrato detalhado de lançamentos.
+- **Segurança e Autorização no Backend**: Proteção no servidor impedindo que desbravadores acessem perfis alheios ou a área administrativa (`/admin/`).
+- **Controle de Exibição Pública pela Diretoria**:
+  - **Top 3**: Pode ser **Ativo** ou **Inativo**, com 4 Modos (*Nome+Foto+Pontos*, *Nome+Foto sem Pontos*, *Identidade Oculta com Pontos 🔒*, *Nome+Pontos sem Foto*).
+  - **Ranking Geral**: Pode ser **Ativo** ou **Inativo**.
+  - **Mensagem de Orientação**: Quando ambos estão desativados, a página pública omite dados no HTML e exibe o botão **[ENTRAR]**.
+- **Cálculo Derivado Confiável**: Total acumulado via backend (`Sum('pontos')`).
+- **Preservação do Histórico**: Desbravadores inativos deixam de figurar no Top 3/Ranking público, mantendo seu histórico salvo.
+- **PWA (Progressive Web App)**: Suporte para instalação na tela inicial de celulares.
 
 ---
 
@@ -23,159 +26,77 @@ O **Sistema Web de Pontuação do Clube de Desbravadores** permite que os desbra
 - **Linguagem**: Python 3.10+
 - **Framework Web**: Django 5.x
 - **Banco de Dados**: SQLite (Desenvolvimento local) e PostgreSQL (Produção)
+- **Imagens & Mídia**: Pillow
 - **Servidor de Arquivos Estáticos**: WhiteNoise
 - **Servidor WSGI**: Gunicorn
-- **Interface**: HTML5, CSS3, Bootstrap 5, Bootstrap Icons, JavaScript Vanilla leve (PWA & Filtro)
+- **Interface**: HTML5, CSS3, Bootstrap 5, Bootstrap Icons, JavaScript Vanilla
 - **Gestão de Configurações**: Python Decouple & DJ-Database-URL
 
 ---
 
 ## 🚀 3. Como Executar o Projeto Localmente
 
-Siga o passo a passo abaixo para rodar a aplicação em seu computador.
-
-### Passo 1: Instalar o Python
-Baixe e instale o Python (versão 3.10 ou superior) através do site oficial: [python.org](https://www.python.org/).  
-Certifique-se de marcar a opção **"Add Python to PATH"** durante a instalação.
-
-### Passo 2: Clonar ou Baixar o Repositório
-```bash
-git clone https://github.com/seu-usuario/pontuacao-desbravadores.git
-cd pontuacao-desbravadores
-```
-
-### Passo 3: Criar e Ativar o Ambiente Virtual (`venv`)
-No terminal (Windows):
-```bash
-python -m venv venv
+### Passo 1: Ativar o Ambiente Virtual (`venv`)
+No Windows:
+```powershell
 .\venv\Scripts\activate
 ```
 
-No Linux/macOS:
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### Passo 4: Instalar as Dependências
-Com o ambiente virtual ativado, execute:
-```bash
-pip install -r requirements.txt
-```
-
-### Passo 5: Configurar as Variáveis de Ambiente (`.env`)
-Copie o arquivo de exemplo `.env.example` para `.env`:
-
-No Windows (CMD/PowerShell):
-```powershell
-copy .env.example .env
-```
-No Linux/macOS:
-```bash
-cp .env.example .env
-```
-
-O arquivo `.env` conterá:
-```env
-SECRET_KEY=django-insecure-chave-de-desenvolvimento-local-123
-DEBUG=True
-ALLOWED_HOSTS=localhost,127.0.0.1
-DATABASE_URL=sqlite:///db.sqlite3
-NOME_DO_CLUBE=Clube de Desbravadores Águias
-EXIBIR_HISTORICO_PUBLICO=True
-```
-
-### Passo 6: Executar as Migrations do Banco de Dados
+### Passo 2: Executar as Migrations
 ```bash
 python manage.py migrate
 ```
 
-### Passo 7: Popular Dados de Teste e Criar Usuário Admin
-Para popular o banco com unidades, desbravadores de exemplo e criar um superusuário automático:
+### Passo 3: Popular Dados de Teste
 ```bash
 python manage.py popular_dados
 ```
-> 🔑 **Credenciais do Usuário Administrativo Criado:**
-> - **Usuário:** `admin`
-> - **Senha:** `admin123`
 
-*(Caso queira criar outro superusuário manualmente, use `python manage.py createsuperuser`)*
+> 🔑 **Contas de Teste Criadas Automaticamente:**
+> - **Diretoria (Admin):** Usuário: `admin` | Senha: `admin123`
+> - **Desbravador 1:** Usuário: `joao` | Senha: `senha123`
+> - **Desbravador 2:** Usuário: `beatriz` | Senha: `senha123`
 
-### Passo 8: Iniciar o Servidor de Desenvolvimento
+### Passo 4: Iniciar o Servidor
 ```bash
 python manage.py runserver
 ```
 
-Acesse no seu navegador:
-- **Página Pública de Consulta:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-- **Ranking Geral:** [http://127.0.0.1:8000/ranking/](http://127.0.0.1:8000/ranking/)
+Acesse no navegador:
+- **Página Inicial Pública:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- **Login:** [http://127.0.0.1:8000/login/](http://127.0.0.1:8000/login/)
+- **Meu Perfil Privado:** [http://127.0.0.1:8000/perfil/](http://127.0.0.1:8000/perfil/)
 - **Painel Administrativo:** [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ---
 
-## ⚙️ 4. Guia de Uso da Área Administrativa (`/admin/`)
+## ⚙️ 4. Guia de Gestão pela Diretoria (`/admin/`)
 
-1. Acesse `http://127.0.0.1:8000/admin/` e faça login com a conta de administrador.
-2. **Cadastrar Unidades**:
-   - Vá em **Unidades** → **Adicionar Unidade**.
-   - Digite o nome da unidade (ex: *Águias*, *Falcões*) e clique em **Salvar**.
-3. **Cadastrar Desbravadores**:
-   - Vá em **Desbravadores** → **Adicionar Desbravador**.
-   - Digite o nome completo, selecione a unidade e clique em **Salvar**.
-4. **Registrar Pontuações**:
-   - **Opção A (Direto no Desbravador)**: Ao editar um desbravador, utilize a seção de formulário inline no final da página para adicionar pontos.
-   - **Opção B (Menu Pontuações)**: Vá em **Pontuações** → **Adicionar Pontuação**. Selecione o desbravador, informe a quantidade de pontos (ex: `10` para ganho ou `-5` para perda) e o motivo.
-   - O campo "Registrado por" será preenchido automaticamente com seu usuário.
+1. Acesse `http://127.0.0.1:8000/admin/` e faça login com a conta da diretoria.
+2. **Controlar Top 3 e Ranking Público**:
+   - Acesse **Configurações do Sistema**.
+   - Alterne as opções **Exibir Ranking Publicamente**, **Exibir Top 3 Publicamente** e selecione o **Modo de Exibição do Top 3**.
+3. **Cadastrar Desbravador com Conta de Acesso**:
+   - Em **Usuários**, crie uma conta para o desbravador (ex: `marcos` / `senha123`).
+   - Em **Desbravadores**, cadastre o membro, selecione a unidade, faça upload da foto (opcional) e vincule à conta de usuário criada.
+4. **Lançar Pontos (+ ou -)**:
+   - Acesse **Pontuações** ou utilize o formulário inline na própria página do desbravador. Informe os pontos (ex: `15` para presença/especialidade, `-5` para atraso) e a justificativa.
 
 ---
 
-## ☁️ 5. Como Fazer Deploy Gratuito em Produção
+## 🧪 5. Suíte de Testes Automatizados
 
-O projeto está preparado para hospedagens gratuitas modernas (como **Render.com**, **Neon.tech**, **Railway** ou **Koyeb**).
-
-### Opção Recomendada: Render.com + Neon.tech (PostgreSQL)
-
-1. **Criar Banco PostgreSQL Gratuito no Neon.tech**:
-   - Acesse [neon.tech](https://neon.tech/) e crie uma conta gratuita.
-   - Crie um novo projeto e copie a `DATABASE_URL` fornecida.
-
-2. **Hospedar a Aplicação no Render.com**:
-   - Envie o código para o seu repositório no **GitHub**.
-   - Acesse [render.com](https://render.com/) e crie um **New Web Service**.
-   - Conecte ao seu repositório do GitHub.
-   - Configure o ambiente:
-     - **Environment**: `Python 3`
-     - **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
-     - **Start Command**: `gunicorn config.wsgi:application`
-   - Adicione as **Variables of Environment**:
-     - `SECRET_KEY`: uma chave forte aleatória.
-     - `DEBUG`: `False`
-     - `ALLOWED_HOSTS`: `seu-app.onrender.com`
-     - `DATABASE_URL`: a URL do PostgreSQL copiada do Neon.tech.
-     - `NOME_DO_CLUBE`: O nome do seu clube de desbravadores.
-     - `EXIBIR_HISTORICO_PUBLICO`: `True` ou `False`
-
-3. **Pronto!** O sistema estará no ar com HTTPS gratuito e PostgreSQL em nuvem.
-
----
-
-## 🧪 6. Suíte de Testes Automatizados
-
-Para rodar os testes unitários da aplicação e verificar a integridade do código:
+Para rodar a suíte completa de testes de autorização, permissões e modos de exibição:
 ```bash
 python manage.py test
 ```
 
-Os testes cobrem:
-- Cadastro de unidades e desbravadores.
-- Lançamento de pontuações positivas e negativas.
-- Cálculo acumulado correto do total de pontos.
-- Ocultação automática de desbravadores inativos na pesquisa.
-- Proteção da rota do Django Admin.
-- Funcionamento dos filtros de busca.
-
 ---
 
-## 📝 Licença
+## ☁️ 6. Deploy Gratuito em Nuvem (Render.com + Neon.tech)
 
-Este projeto é desenvolvido para uso em **Clubes de Desbravadores**. Livre para uso, modificação e distribuição sem fins lucrativos.
+1. Suba o projeto para o seu repositório no **GitHub**.
+2. No **Render.com**, crie um **Web Service** conectado ao repositório:
+   - **Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate`
+   - **Start Command**: `gunicorn config.wsgi:application`
+3. Configure as variáveis de ambiente (`DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`).

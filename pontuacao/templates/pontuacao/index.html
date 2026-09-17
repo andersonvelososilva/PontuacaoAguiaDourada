@@ -1,120 +1,208 @@
 {% extends 'base.html' %}
 
-{% block title %}Consulta de Pontuação — {{ NOME_DO_CLUBE }}{% endblock %}
+{% block title %}{{ NOME_DO_CLUBE }} — Pontuação dos Desbravadores{% endblock %}
 
 {% block content %}
-<!-- Hero Header Section -->
+<!-- Banner de Boas-Vindas -->
 <div class="hero-banner text-center">
     <div class="container">
-        <h1 class="hero-title"><i class="bi bi-award-fill text-warning me-2"></i>Pontuação dos Desbravadores</h1>
-        <p class="hero-subtitle mb-0">Acompanhe seu desempenho, presença e conquistas no clube.</p>
+        <h1 class="hero-title"><i class="bi bi-shield-shaded text-warning me-2"></i>{{ NOME_DO_CLUBE }}</h1>
+        <p class="hero-subtitle mb-0">Sistema Oficial de Pontuação e Desempenho dos Desbravadores</p>
     </div>
 </div>
 
 <div class="container px-3">
-    <!-- Search Bar & Filters Section -->
-    <div class="search-container mb-4">
-        <form method="GET" action="{% url 'pontuacao:index' %}" id="search-form">
-            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
-                <div class="row g-2 align-items-center">
-                    <div class="col-12 col-md-7 position-relative">
-                        <i class="bi bi-search search-icon"></i>
-                        <input type="text" 
-                               name="q" 
-                               id="search-input"
-                               class="form-control search-input" 
-                               placeholder="Digite o nome do desbravador..." 
-                               value="{{ query_q }}"
-                               autocomplete="off">
-                    </div>
-                    <div class="col-12 col-md-5">
-                        <select name="unidade" id="unidade-select" class="form-select search-input py-2" onchange="document.getElementById('search-form').submit();">
-                            <option value="">Todas as Unidades</option>
-                            {% for u in unidades %}
-                                <option value="{{ u.id }}" {% if unidade_selecionada == u.id|stringformat:"i" %}selected{% endif %}>
-                                    Unidade {{ u.nome }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
 
-    <!-- Desbravadores List Grid -->
-    <div class="row g-3" id="desbravadores-grid">
-        {% for d in desbravadores %}
-            <div class="col-12 col-sm-6 col-lg-4 desbravador-card-item" 
-                 data-nome="{{ d.nome|lower }}" 
-                 data-unidade="{{ d.unidade.nome|lower }}">
-                <div class="card card-desbravador h-100 p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h2 class="h5 fw-bold mb-1 text-dark">{{ d.nome }}</h2>
-                            <span class="badge badge-unidade">
-                                <i class="bi bi-flag-fill me-1 text-primary"></i>Unidade {{ d.unidade.nome }}
-                            </span>
-                        </div>
-                        <div class="text-end">
-                            {% if d.total_pontos_calc > 0 %}
-                                <span class="badge bg-success text-white badge-pontos-lg shadow-sm">
-                                    +{{ d.total_pontos_calc }} <small style="font-size: 0.65em;">pts</small>
-                                </span>
-                            {% elif d.total_pontos_calc < 0 %}
-                                <span class="badge bg-danger text-white badge-pontos-lg shadow-sm">
-                                    {{ d.total_pontos_calc }} <small style="font-size: 0.65em;">pts</small>
-                                </span>
-                            {% else %}
-                                <span class="badge bg-secondary text-white badge-pontos-lg shadow-sm">
-                                    0 <small style="font-size: 0.65em;">pts</small>
-                                </span>
-                            {% endif %}
-                        </div>
+    <!-- CASO 1: Ambas as seções públicas estão DESATIVADAS -->
+    {% if not config.top3_publico and not config.ranking_publico %}
+        <div class="row justify-content-center py-4">
+            <div class="col-12 col-md-8 text-center">
+                <div class="card card-custom p-5 shadow-sm">
+                    <div class="mb-3 text-warning display-3">
+                        <i class="bi bi-lock-fill"></i>
                     </div>
-                    <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-                        <small class="text-muted"><i class="bi bi-clock-history me-1"></i>Atualizado</small>
-                        <a href="{% url 'pontuacao:detalhe' d.pk %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-semibold">
-                            Ver Extrato <i class="bi bi-chevron-right ms-1"></i>
+                    <h2 class="h4 fw-bold text-dark mb-2">Informações Públicas Indisponíveis</h2>
+                    <p class="text-muted mb-4">
+                        As informações públicas de pontuação não estão disponíveis no momento.<br>
+                        Para consultar sua própria pontuação e extrato, faça login no sistema.
+                    </p>
+                    <div>
+                        <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-lg rounded-pill px-5 fw-bold text-dark shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> ENTRAR
                         </a>
                     </div>
                 </div>
             </div>
-        {% empty %}
-            <div class="col-12 text-center py-5">
-                <div class="p-4 rounded-4 bg-white shadow-sm d-inline-block" style="max-width: 450px;">
-                    <i class="bi bi-search text-muted display-4 mb-3 d-block"></i>
-                    <h3 class="h5 fw-bold text-secondary">Nenhum desbravador encontrado</h3>
-                    <p class="text-muted small mb-3">Tente pesquisar por outro nome ou selecionar uma unidade diferente.</p>
-                    <a href="{% url 'pontuacao:index' %}" class="btn btn-custom-primary btn-sm">Limpar Filtros</a>
+        </div>
+    {% else %}
+
+        <!-- SEÇÃO: TOP 3 -->
+        {% if config.top3_publico %}
+            <div class="mb-5">
+                <div class="d-flex align-items-center justify-content-center gap-2 mb-4">
+                    <h2 class="h3 fw-bold text-dark mb-0 text-center">
+                        🏆 TOP 3 DO CLUBE
+                    </h2>
+                </div>
+
+                <div class="row g-3 justify-content-center">
+                    {% for d in top3_list %}
+                        <div class="col-12 col-sm-4">
+                            <div class="card card-custom h-100 p-4 text-center shadow-sm position-relative overflow-hidden">
+                                <!-- Medalha / Posição -->
+                                <div class="mb-3">
+                                    {% if forloop.counter == 1 %}
+                                        <span class="fs-1 text-warning" title="1º Lugar">🥇</span>
+                                    {% elif forloop.counter == 2 %}
+                                        <span class="fs-1 text-secondary" title="2º Lugar">🥈</span>
+                                    {% elif forloop.counter == 3 %}
+                                        <span class="fs-1 text-danger" title="3º Lugar">🥉</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- MODO: OCULTO_PONTOS (Identidade Oculta) -->
+                                {% if config.modo_top3 == 'OCULTO_PONTOS' %}
+                                    <div class="avatar-placeholder mx-auto mb-3 bg-secondary">
+                                        <i class="bi bi-lock-fill"></i>
+                                    </div>
+                                    <h3 class="h5 fw-bold text-dark mb-1">Desbravador {{ forloop.counter }}</h3>
+                                    <span class="badge bg-light text-muted border mb-3">🔒 Identidade Oculta</span>
+                                    <div class="mt-auto">
+                                        <span class="badge bg-success badge-pontos-lg shadow-sm">
+                                            +{{ d.total_pontos_calc }} <small style="font-size:0.65em;">pts</small>
+                                        </span>
+                                    </div>
+
+                                <!-- MODOS DE IDENTIDADE VISÍVEL -->
+                                {% else %}
+
+                                    <!-- Foto (se o modo permitir foto) -->
+                                    {% if config.modo_top3 == 'NOME_FOTO_PONTOS' or config.modo_top3 == 'NOME_FOTO_SEMPONTOS' %}
+                                        <div class="mb-3">
+                                            {% if d.foto %}
+                                                <img src="{{ d.foto.url }}" alt="{{ d.nome }}" class="avatar-lg mx-auto">
+                                            {% else %}
+                                                <div class="avatar-placeholder mx-auto">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Nome -->
+                                    <h3 class="h5 fw-bold text-dark mb-1">{{ d.nome }}</h3>
+                                    <div class="mb-3">
+                                        <span class="badge badge-unidade">Unidade {{ d.unidade.nome }}</span>
+                                    </div>
+
+                                    <!-- Pontos (se o modo permitir pontos) -->
+                                    {% if config.modo_top3 == 'NOME_FOTO_PONTOS' or config.modo_top3 == 'NOME_PONTOS_SEMFOTO' %}
+                                        <div class="mt-auto">
+                                            <span class="badge bg-success badge-pontos-lg shadow-sm">
+                                                +{{ d.total_pontos_calc }} <small style="font-size:0.65em;">pts</small>
+                                            </span>
+                                        </div>
+                                    {% endif %}
+
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center py-4">
+                            <p class="text-muted">Nenhum desbravador pontuado no Top 3 ainda.</p>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-        {% endfor %}
-    </div>
+        {% else %}
+            <!-- Top 3 Fechado / Indisponível -->
+            <div class="card card-custom p-4 mb-5 shadow-sm text-center">
+                <h3 class="h5 fw-bold text-dark mb-2">🏆 TOP 3</h3>
+                <p class="text-muted mb-3">O Top 3 não está disponível no momento. Para consultar sua própria pontuação, faça login.</p>
+                <div>
+                    <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-dark">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> ENTRAR
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- SEÇÃO: RANKING GERAL -->
+        {% if config.ranking_publico %}
+            <div class="mb-5">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h2 class="h4 fw-bold text-dark mb-0">
+                        <i class="bi bi-trophy-fill text-warning me-2"></i>Ranking Geral
+                    </h2>
+                </div>
+
+                <div class="card card-custom p-3 p-md-4 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" class="text-center" style="width: 70px;">Pos.</th>
+                                    <th scope="col">Desbravador</th>
+                                    <th scope="col">Unidade</th>
+                                    <th scope="col" class="text-end">Pontos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in ranking_list %}
+                                    <tr>
+                                        <td class="text-center fw-bold fs-5">
+                                            {% if forloop.counter == 1 %}
+                                                🥇
+                                            {% elif forloop.counter == 2 %}
+                                                🥈
+                                            {% elif forloop.counter == 3 %}
+                                                🥉
+                                            {% else %}
+                                                <span class="text-muted fs-6">#{{ forloop.counter }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="fw-bold text-dark">{{ item.nome }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge badge-unidade">Unidade {{ item.unidade.nome }}</span>
+                                        </td>
+                                        <td class="text-end fw-extrabold">
+                                            {% if item.total_pontos_calc > 0 %}
+                                                <span class="text-success fs-5 fw-bold">+{{ item.total_pontos_calc }} pts</span>
+                                            {% elif item.total_pontos_calc < 0 %}
+                                                <span class="text-danger fs-5 fw-bold">{{ item.total_pontos_calc }} pts</span>
+                                            {% else %}
+                                                <span class="text-secondary fs-6">0 pts</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">
+                                            Nenhum desbravador cadastrado no ranking.
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <!-- Ranking Fechado / Indisponível -->
+            <div class="card card-custom p-4 mb-5 shadow-sm text-center">
+                <h3 class="h5 fw-bold text-dark mb-2">📊 RANKING GERAL</h3>
+                <p class="text-muted mb-3">O ranking não está disponível no momento. Para consultar sua própria pontuação, faça login.</p>
+                <div>
+                    <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold text-dark">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> ENTRAR
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Filtro instantâneo no front-end para resposta imediata ao digitar
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('search-input');
-        const gridItems = document.querySelectorAll('.desbravador-card-item');
-
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const term = e.target.value.toLowerCase().trim();
-                gridItems.forEach(item => {
-                    const nome = item.getAttribute('data-nome') || '';
-                    const unidade = item.getAttribute('data-unidade') || '';
-                    if (nome.includes(term) || unidade.includes(term)) {
-                        item.style.display = '';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-        }
-    });
-</script>
 {% endblock %}

@@ -1,6 +1,20 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Unidade, Desbravador, Pontuacao
+from .models import Unidade, Desbravador, Pontuacao, ConfiguracaoSistema
+
+@admin.register(ConfiguracaoSistema)
+class ConfiguracaoSistemaAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'ranking_publico', 'top3_publico', 'modo_top3', 'updated_at')
+
+    def has_add_permission(self, request):
+        # Impede criar mais de um registro de configuração (Singleton)
+        if self.model.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 @admin.register(Unidade)
 class UnidadeAdmin(admin.ModelAdmin):
@@ -31,20 +45,27 @@ class PontuacaoInline(admin.TabularInline):
 
 @admin.register(Desbravador)
 class DesbravadorAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'unidade', 'total_pontos_display', 'ativo', 'created_at')
+    list_display = ('nome', 'unidade', 'user_status', 'total_pontos_display', 'ativo', 'created_at')
     list_filter = ('unidade', 'ativo')
-    search_fields = ('nome', 'unidade__nome')
+    search_fields = ('nome', 'unidade__nome', 'user__username')
+    raw_id_fields = ('user',)
     inlines = [PontuacaoInline]
     ordering = ('nome',)
+
+    def user_status(self, obj):
+        if obj.user:
+            return format_html('<span style="color: #198754; font-weight: bold;">👤 {}</span>', obj.user.username)
+        return format_html('<span style="color: #6c757d; font-style: italic;">Sem usuário</span>')
+    user_status.short_description = "Conta de Usuário"
 
     def total_pontos_display(self, obj):
         total = obj.total_pontos
         if total > 0:
-            color = "#198754" # green
+            color = "#198754"
         elif total < 0:
-            color = "#dc3545" # red
+            color = "#dc3545"
         else:
-            color = "#6c757d" # grey
+            color = "#6c757d"
         return format_html('<b style="color: {}; font-size: 1.05rem;">{} pts</b>', color, total)
     total_pontos_display.short_description = "Pontuação Total"
 

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1b2a4a">
-    <meta name="description" content="Consulta pública de pontuação dos desbravadores do {{ NOME_DO_CLUBE }}">
+    <meta name="description" content="Sistema de Pontuação dos Desbravadores — {{ NOME_DO_CLUBE }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="{% url 'manifest' %}">
@@ -28,7 +28,7 @@
             --gold-accent: #f4a261;
             --gold-light: #e9c46a;
             --bg-light: #f8f9fa;
-            --card-border-radius: 16px;
+            --card-border-radius: 18px;
         }
 
         body {
@@ -78,7 +78,7 @@
             border-bottom-left-radius: 28px;
             border-bottom-right-radius: 28px;
             box-shadow: 0 8px 24px rgba(27, 42, 74, 0.2);
-            margin-bottom: -1.5rem;
+            margin-bottom: 1.5rem;
             position: relative;
         }
 
@@ -96,17 +96,11 @@
         }
 
         /* Cards and Elements */
-        .card-desbravador {
+        .card-custom {
             border: none;
             border-radius: var(--card-border-radius);
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             background: #ffffff;
-        }
-
-        .card-desbravador:active, .card-desbravador:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
         }
 
         .badge-pontos-lg {
@@ -125,46 +119,43 @@
             font-size: 0.82rem;
         }
 
-        .search-container {
-            position: relative;
-            z-index: 10;
-        }
-
-        .search-input {
-            border-radius: 14px;
-            padding: 0.85rem 1.2rem 0.85rem 2.9rem;
-            font-size: 1rem;
-            border: 2px solid #e2e8f0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            background: #ffffff;
-        }
-
-        .search-input:focus {
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 4px rgba(27, 42, 74, 0.15);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1.1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.15rem;
-            color: #94a3b8;
-        }
-
         .btn-custom-primary {
             background-color: var(--primary-blue);
             color: #ffffff;
             font-weight: 600;
             border-radius: 12px;
-            padding: 0.65rem 1.2rem;
+            padding: 0.65rem 1.4rem;
             border: none;
+            text-decoration: none;
         }
 
         .btn-custom-primary:hover, .btn-custom-primary:focus {
             background-color: var(--secondary-blue);
             color: #ffffff;
+        }
+
+        /* Avatar Styling */
+        .avatar-lg {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .avatar-placeholder {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            border: 4px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         footer {
@@ -188,12 +179,26 @@
                 <span>{{ NOME_DO_CLUBE }}</span>
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{% url 'pontuacao:ranking' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
-                    <i class="bi bi-trophy-fill me-1 text-warning"></i> Ranking
-                </a>
-                <a href="/admin/" class="btn btn-light btn-sm rounded-pill px-3 text-dark fw-bold" title="Área Administrativa">
-                    <i class="bi bi-person-fill-lock me-1"></i> Admin
-                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'pontuacao:perfil' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
+                        <i class="bi bi-person-circle me-1"></i> Meu Perfil
+                    </a>
+                    {% if user.is_staff or user.is_superuser %}
+                        <a href="/admin/" class="btn btn-warning btn-sm rounded-pill px-3 text-dark fw-bold">
+                            <i class="bi bi-gear-fill me-1"></i> Diretoria
+                        </a>
+                    {% endif %}
+                    <form method="POST" action="{% url 'pontuacao:logout' %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light btn-sm rounded-pill px-3 text-dark fw-bold">
+                            <i class="bi bi-box-arrow-right me-1"></i> Sair
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-sm rounded-pill px-3 text-dark fw-bold">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Entrar
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -207,7 +212,7 @@
     <footer class="text-center">
         <div class="container">
             <p class="mb-1 fw-semibold">{{ NOME_DO_CLUBE }}</p>
-            <small class="text-muted">Sistema Web de Pontuação — Transparência e Reconhecimento</small>
+            <small class="text-muted">Sistema de Pontuação dos Desbravadores</small>
         </div>
     </footer>
 
@@ -219,9 +224,9 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/static/js/sw.js').then(function(registration) {
-                    console.log('ServiceWorker registrado com sucesso:', registration.scope);
-                }, function(err) {
-                    console.log('Falha ao registrar ServiceWorker:', err);
+                    console.log('ServiceWorker registrado:', registration.scope);
+                }).catch(function(err) {
+                    console.log('Erro no ServiceWorker:', err);
                 });
             });
         }
