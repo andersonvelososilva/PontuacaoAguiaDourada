@@ -14,10 +14,10 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-local-dev-key-change-
 
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,.web.app,.firebaseapp.com,.run.app,*', cast=Csv())
 
-# Trust origins for CSRF if specified (useful in production deployment like Render/Koyeb)
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost,http://127.0.0.1', cast=Csv())
+# Trust origins for CSRF if specified (useful in production deployment like Firebase/Cloud Run/Render)
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost,http://127.0.0.1,https://*.web.app,https://*.firebaseapp.com,https://*.run.app', cast=Csv())
 
 # Application definition
 INSTALLED_APPS = [
