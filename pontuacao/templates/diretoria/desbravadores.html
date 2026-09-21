@@ -1,0 +1,125 @@
+{% extends 'pontuacao/base_diretoria.html' %}
+
+{% block title %}Desbravadores — Diretoria{% endblock %}
+
+{% block content %}
+<div class="container py-4 px-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-0"><i class="bi bi-people-fill text-primary me-2"></i>Gestão de Desbravadores</h1>
+            <p class="text-muted small mb-0">Consulte, pesquise e edite os membros cadastrados no clube.</p>
+        </div>
+        <a href="/admin/pontuacao/desbravador/add/" class="btn btn-primary rounded-pill px-3 fw-bold">
+            <i class="bi bi-person-plus-fill me-1"></i> Cadastrar Novo
+        </a>
+    </div>
+
+    <!-- Filtros e Busca -->
+    <div class="card card-custom p-3 mb-4">
+        <form method="GET" action="{% url 'pontuacao:diretoria_desbravadores' %}">
+            <div class="row g-2">
+                <div class="col-12 col-md-5">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar por nome ou unidade..." value="{{ query_q }}">
+                </div>
+                <div class="col-6 col-md-3">
+                    <select name="unidade" class="form-select">
+                        <option value="">Todas as Unidades</option>
+                        {% for u in unidades %}
+                            <option value="{{ u.id }}" {% if unidade_sel == u.id|stringformat:"i" %}selected{% endif %}>
+                                Unidade {{ u.nome }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Todos os Status</option>
+                        <option value="ativos" {% if status_sel == 'ativos' %}selected{% endif %}>Ativos</option>
+                        <option value="inativos" {% if status_sel == 'inativos' %}selected{% endif %}>Inativos</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button type="submit" class="btn btn-diretoria-primary w-100">
+                        <i class="bi bi-search me-1"></i> Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabela / Lista de Desbravadores -->
+    <div class="card card-custom p-3 p-md-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Desbravador</th>
+                        <th>Unidade</th>
+                        <th>Conta de Usuário</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-end">Pontuação Total</th>
+                        <th class="text-end">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in desbravadores %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if d.foto %}
+                                        <img src="{{ d.foto.url }}" alt="{{ d.nome }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                            {{ d.nome|slice:":1" }}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ d.nome }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">Unidade {{ d.unidade.nome }}</span>
+                            </td>
+                            <td>
+                                {% if d.user %}
+                                    <span class="badge bg-success-subtle text-success border border-success">👤 {{ d.user.username }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-muted border">Sem conta</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if d.ativo %}
+                                    <span class="badge bg-success">Ativo</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inativo</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end fw-bold fs-6">
+                                {% if d.total_pontos > 0 %}
+                                    <span class="text-success">+{{ d.total_pontos }} pts</span>
+                                {% elif d.total_pontos < 0 %}
+                                    <span class="text-danger">{{ d.total_pontos }} pts</span>
+                                {% else %}
+                                    <span class="text-muted">0 pts</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'pontuacao:diretoria_desbravador_edit' d.pk %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    <i class="bi bi-pencil-square me-1"></i> Ver / Editar
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Nenhum desbravador encontrado com os filtros selecionados.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

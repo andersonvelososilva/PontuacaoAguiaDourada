@@ -3,19 +3,18 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from .models import Unidade, Desbravador, Pontuacao, ConfiguracaoSistema
 
-class PontuacaoEvolucaoTest(TestCase):
+class PontuacaoCompletaTest(TestCase):
     def setUp(self):
-        # 1. Criar Unidades
+        # 1. Unidades
         self.unidade_a = Unidade.objects.create(nome="Águias", ativo=True)
         self.unidade_b = Unidade.objects.create(nome="Falcões", ativo=True)
 
-        # 2. Criar Usuário Diretoria e Usuários Desbravadores
-        self.admin_user = User.objects.create_superuser(
-            username="admin_diretoria",
-            email="admin@clube.com",
-            password="adminpassword123"
+        # 2. Usuários
+        self.diretoria_user = User.objects.create_superuser(
+            username="diretor",
+            email="diretor@clube.com",
+            password="diretorpassword123"
         )
-
         self.user_joao = User.objects.create_user(
             username="joao",
             password="senha123"
@@ -24,8 +23,13 @@ class PontuacaoEvolucaoTest(TestCase):
             username="beatriz",
             password="senha123"
         )
+        self.user_inativo = User.objects.create_user(
+            username="carlos",
+            password="senha123",
+            is_active=False
+        )
 
-        # 3. Criar Desbravadores
+        # 3. Desbravadores
         self.desbravador_joao = Desbravador.objects.create(
             nome="João Silva",
             unidade=self.unidade_a,
@@ -38,165 +42,158 @@ class PontuacaoEvolucaoTest(TestCase):
             user=self.user_beatriz,
             ativo=True
         )
-        self.desbravador_inativo = Desbravador.objects.create(
+        self.desbravador_carlos = Desbravador.objects.create(
             nome="Carlos Souza",
             unidade=self.unidade_a,
+            user=self.user_inativo,
             ativo=False
         )
 
-        # 4. Criar Lançamentos de Pontos
-        Pontuacao.objects.create(
-            desbravador=self.desbravador_joao,
-            pontos=50,
-            motivo="Acampamento",
-            criado_por=self.admin_user
-        )
-        Pontuacao.objects.create(
-            desbravador=self.desbravador_beatriz,
-            pontos=100,
-            motivo="Campeã de Ordem Unida",
-            criado_por=self.admin_user
-        )
-        Pontuacao.objects.create(
-            desbravador=self.desbravador_inativo,
-            pontos=200,
-            motivo="Pontos Inativo",
-            criado_por=self.admin_user
-        )
+        # 4. Lançamentos Iniciais
+        Pontuacao.objects.create(desbravador=self.desbravador_joao, pontos=50, motivo="Presença", criado_por=self.diretoria_user)
+        Pontuacao.objects.create(desbravador=self.desbravador_beatriz, pontos=100, motivo="Campeã Ordem Unida", criado_por=self.diretoria_user)
 
-        # 5. Garantir Configuração do Sistema
+        # 5. Configuração Inicial
         self.config = ConfiguracaoSistema.get_solo()
-        self.config.ranking_publico = True
-        self.config.top3_publico = True
-        self.config.modo_top3 = 'NOME_FOTO_PONTOS'
+        self.config.ranking_modo = 'COMPLETO'
+        self.config.mostrar_nomes_ranking = True
+        self.config.mostrar_pontos_ranking = True
         self.config.save()
 
-    # --- TESTES DE AUTENTICAÇÃO E PERMISSÕES (SEGURANÇA BACKEND) ---
+    # --- 1. TESTES DA TELA INICIAL LIMPA (HOME /) ---
 
-    def test_desbravador_login_e_acesso_ao_proprio_perfil(self):
-        client = Client()
-        login_success = client.login(username="joao", password="senha123")
-        self.assertTrue(login_success)
-
-        response = client.get(reverse('pontuacao:perfil'))
+    def test_pagina_inicial_exibe_titulo_e_opcoes_ver_ranking_e_entrar(self):
+        response = self.client.get(reverse('pontuacao:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "João Silva")
-        self.assertContains(response, "50 pts")
-        self.assertContains(response, "Acampamento")
+        self.assertContains(response, "Sistema de Pontos")
+        self.assertContains(response, "Ver Ranking")
+        self.assertContains(response, "Entrar")
 
-    def test_desbravador_bloqueado_ao_tentar_acessar_perfil_alheio(self):
+    # --- 2. TESTES DE LOGIN E REDIRECIONAMENTO ---
+
+    def test_login_diretoria_redireciona_para_painel_diretoria(self):
         client = Client()
-        client.login(username="joao", password="senha123")
+        response = client.post(reverse('pontuacao:login'), {'username': 'diretor', 'password': 'diretorpassword123'})
+        self.assertRedirects(response, '/diretoria/')
 
-        # Tentar passar ID do perfil da Beatriz na Query String
+    def test_login_desbravador_redireciona_para_perfil(self):
+        client = Client()
+        response = client.post(reverse('pontuacao:login'), {'username': 'joao', 'password': 'senha123'})
+        self.assertRedirects(response, '/perfil/')
+
+    def test_login_credenciais_invalidas(self):
+        client = Client()
+        response = client.post(reverse('pontuacao:login'), {'username': 'joao', 'password': 'senhaincorreta'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Usuário ou senha incorretos")
+
+    # --- 3. TESTES DE AUTORIZAÇÃO E SEGURANÇA ---
+
+    def test_desbravador_bloqueado_ao_acessar_painel_diretoria(self):
+        client = Client()
+        client.login(username='joao', password='senha123')
+        response = client.get(reverse('pontuacao:diretoria_dashboard'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_desbravador_bloqueado_ao_acessar_perfil_de_outro_membro(self):
+        client = Client()
+        client.login(username='joao', password='senha123')
         response = client.get(f"{reverse('pontuacao:perfil')}?id={self.desbravador_beatriz.id}")
         self.assertEqual(response.status_code, 403)
-        self.assertContains(response, "Segurança", status_code=403)
 
-    def test_desbravador_bloqueado_ao_tentar_acessar_django_admin(self):
+    def test_diretoria_acessa_painel_com_sucesso(self):
         client = Client()
-        client.login(username="joao", password="senha123")
-
-        response = client.get('/admin/')
-        # Deve redirecionar para login do admin (302) pois não é is_staff
-        self.assertEqual(response.status_code, 302)
-
-    def test_diretoria_acessa_admin_com_sucesso(self):
-        client = Client()
-        client.login(username="admin_diretoria", password="adminpassword123")
-
-        response = client.get('/admin/')
+        client.login(username='diretor', password='diretorpassword123')
+        response = client.get(reverse('pontuacao:diretoria_dashboard'))
         self.assertEqual(response.status_code, 200)
 
-    # --- TESTES DO RANKING GERAL ---
+    # --- 4. TESTES DE LANÇAMENTO E REMOÇÃO DE PONTOS ---
 
-    def test_ranking_ativo_exibe_dados(self):
-        self.config.ranking_publico = True
+    def test_lancar_pontos_positivos(self):
+        client = Client()
+        client.login(username='diretor', password='diretorpassword123')
+
+        response = client.post(reverse('pontuacao:diretoria_pontuacao'), {
+            'desbravador': self.desbravador_joao.id,
+            'tipo': 'ADICIONAR',
+            'quantidade': 20,
+            'motivo': 'Especialidade de Acampamento'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.desbravador_joao.total_pontos, 70)
+
+    def test_lancar_remocao_de_pontos_punicao(self):
+        client = Client()
+        client.login(username='diretor', password='diretorpassword123')
+
+        response = client.post(reverse('pontuacao:diretoria_pontuacao'), {
+            'desbravador': self.desbravador_joao.id,
+            'tipo': 'REMOVER',
+            'quantidade': 15,
+            'motivo': 'Atraso na Formação'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(self.desbravador_joao.total_pontos, 35)
+
+    # --- 5. TESTES DE CLASSIFICAÇÃO INDIVIDUAL NO PERFIL ---
+
+    def test_desbravador_ve_propria_posicao_no_perfil_mesmo_ranking_oculto(self):
+        self.config.ranking_modo = 'OCULTO'
         self.config.save()
 
-        response = self.client.get(reverse('pontuacao:index'))
+        client = Client()
+        client.login(username='joao', password='senha123')
+        response = client.get(reverse('pontuacao:perfil'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Ranking Geral")
+        self.assertEqual(response.context['posicao_ranking'], 2)
+
+    # --- 6. TESTES DA ROTA DEDICADA DE RANKING PÚBLICO (/ranking/) E ATUALIZAÇÃO DINÂMICA ---
+
+    def test_ranking_modo_completo_no_endpoint_ranking(self):
+        self.config.ranking_modo = 'COMPLETO'
+        self.config.save()
+
+        response = self.client.get(reverse('pontuacao:public_ranking'))
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Beatriz Santos")
         self.assertContains(response, "João Silva")
-        # Inativo não deve aparecer
-        self.assertNotContains(response, "Carlos Souza")
 
-    def test_ranking_inativo_nao_exibe_dados_e_mostra_mensagem(self):
-        self.config.ranking_publico = False
+    def test_ranking_modo_parcial_no_endpoint_ranking(self):
+        self.config.ranking_modo = 'PARCIAL'
+        self.config.ranking_limite_publico = 1
         self.config.save()
 
-        response = self.client.get(reverse('pontuacao:index'))
+        response = self.client.get(reverse('pontuacao:public_ranking'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "O ranking não está disponível no momento")
-        self.assertContains(response, "ENTRAR")
+        self.assertEqual(len(response.context['ranking_list']), 1)
+        self.assertContains(response, "Beatriz Santos")
+        self.assertNotContains(response, "João Silva")
+
+    def test_ranking_modo_oculto_no_endpoint_ranking(self):
+        self.config.ranking_modo = 'OCULTO'
+        self.config.save()
+
+        response = self.client.get(reverse('pontuacao:public_ranking'))
+        self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context['ranking_list'])
+        self.assertContains(response, "Ranking Indisponível no Momento")
 
-    # --- TESTES DO TOP 3 E SEUS 4 MODOS ---
+    def test_atualizacao_dinamica_apos_modificacao_na_diretoria(self):
+        client = Client()
+        client.login(username='diretor', password='diretorpassword123')
 
-    def test_top3_inativo_nao_exibe_dados_e_mostra_mensagem(self):
-        self.config.top3_publico = False
-        self.config.save()
+        # Diretoria altera o ranking para OCULTO via formulário de configurações
+        response_post = client.post(reverse('pontuacao:diretoria_configuracoes'), {
+            'ranking_modo': 'OCULTO',
+            'ranking_limite_publico': 3,
+            'mostrar_nomes_ranking': True,
+            'mostrar_pontos_ranking': True,
+            'mostrar_fotos_ranking': False,
+        })
+        self.assertEqual(response_post.status_code, 302)
 
-        response = self.client.get(reverse('pontuacao:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "O Top 3 não está disponível no momento")
-        self.assertIsNone(response.context['top3_list'])
-
-    def test_top3_modo_nome_foto_pontos(self):
-        self.config.top3_publico = True
-        self.config.modo_top3 = 'NOME_FOTO_PONTOS'
-        self.config.save()
-
-        response = self.client.get(reverse('pontuacao:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Beatriz Santos")
-        self.assertContains(response, "+100")
-
-    def test_top3_modo_oculto_pontos(self):
-        self.config.top3_publico = True
-        self.config.ranking_publico = False
-        self.config.modo_top3 = 'OCULTO_PONTOS'
-        self.config.save()
-
-        response = self.client.get(reverse('pontuacao:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Desbravador 1")
-        self.assertContains(response, "Identidade Oculta")
-        # Não deve expor o nome real quando o ranking também está oculto
-        self.assertNotContains(response, "Beatriz Santos")
-        self.assertContains(response, "+100")
-
-    def test_top3_modo_nome_foto_sempontos(self):
-        self.config.top3_publico = True
-        self.config.modo_top3 = 'NOME_FOTO_SEMPONTOS'
-        self.config.save()
-
-        response = self.client.get(reverse('pontuacao:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Beatriz Santos")
-
-    def test_top3_modo_nome_pontos_semfoto(self):
-        self.config.top3_publico = True
-        self.config.modo_top3 = 'NOME_PONTOS_SEMFOTO'
-        self.config.save()
-
-        response = self.client.get(reverse('pontuacao:index'))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Beatriz Santos")
-        self.assertContains(response, "+100")
-
-    def test_alteracao_de_pontuacao_atualiza_posicao_top3(self):
-        # Inicialmente Beatriz = 100, João = 50. Beatriz é o 1º no Top 3.
-        # Adicionar +100 pontos para João => João fica com 150.
-        Pontuacao.objects.create(
-            desbravador=self.desbravador_joao,
-            pontos=100,
-            motivo="Super Destaque",
-            criado_por=self.admin_user
-        )
-        self.assertEqual(self.desbravador_joao.total_pontos, 150)
-
-        response = self.client.get(reverse('pontuacao:index'))
-        top3_list = response.context['top3_list']
-        self.assertEqual(top3_list[0], self.desbravador_joao)
+        # Consulta pública a /ranking/ deve refletir imediatamente a alteração para OCULTO
+        response_public = self.client.get(reverse('pontuacao:public_ranking'))
+        self.assertEqual(response_public.status_code, 200)
+        self.assertIsNone(response_public.context['ranking_list'])
+        self.assertContains(response_public, "Ranking Indisponível no Momento")

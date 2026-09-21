@@ -1,0 +1,73 @@
+{% extends 'pontuacao/base_diretoria.html' %}
+
+{% block title %}Lançar Pontuação — Diretoria{% endblock %}
+
+{% block content %}
+<div class="container py-4 px-3" style="max-width: 600px;">
+    <div class="card card-custom p-4 shadow-sm">
+        <div class="text-center mb-4">
+            <span class="fs-1 text-primary"><i class="bi bi-plus-slash-minus"></i></span>
+            <h1 class="h4 fw-bold text-dark mb-1">Lançar Pontuação</h1>
+            <p class="text-muted small">Adicione pontos por tarefas cumpridas ou registre punições/remoções com justificativa.</p>
+        </div>
+
+        <form method="POST" id="form-pontuacao" onsubmit="return confirmarLancamento();">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_desbravador" class="form-label fw-bold text-secondary">Desbravador</label>
+                {{ form.desbravador }}
+            </div>
+
+            <div class="mb-3 p-3 bg-light rounded-3 border">
+                <label class="form-label fw-bold text-secondary mb-2">Tipo de Lançamento</label>
+                <div class="d-flex gap-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipo" id="tipo_add" value="ADICIONAR" checked>
+                        <label class="form-check-label fw-bold text-success" for="tipo_add">
+                            <i class="bi bi-plus-circle-fill me-1"></i> Adicionar Pontos (+)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipo" id="tipo_rem" value="REMOVER">
+                        <label class="form-check-label fw-bold text-danger" for="tipo_rem">
+                            <i class="bi bi-dash-circle-fill me-1"></i> Remover Pontos (-)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_quantidade" class="form-label fw-bold text-secondary">Quantidade de Pontos (Valor Positivo)</label>
+                <input type="number" name="quantidade" id="id_quantidade" class="form-control form-control-lg" placeholder="Ex: 10" min="1" required>
+                <small class="text-muted">Se for uma remoção/punição, o sistema aplicará o sinal negativo automaticamente.</small>
+            </div>
+
+            <div class="mb-4">
+                <label for="id_motivo" class="form-label fw-bold text-secondary">Motivo / Justificativa (Obrigatório)</label>
+                <input type="text" name="motivo" id="id_motivo" class="form-control" placeholder="Ex: Presença na reunião / Atraso na formação" required>
+            </div>
+
+            <button type="submit" class="btn btn-diretoria-primary w-100 py-2 fs-6 shadow-sm">
+                <i class="bi bi-check-circle-fill me-1"></i> Confirmar e Salvar Lançamento
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function confirmarLancamento() {
+        const tipoRem = document.getElementById('tipo_rem');
+        const qtd = document.getElementById('id_quantidade').value;
+        const desbravadorSelect = document.getElementById('id_desbravador');
+        const nomeDesbravador = desbravadorSelect.options[desbravadorSelect.selectedIndex].text;
+
+        if (tipoRem && tipoRem.checked) {
+            return confirm(`Atenção: Confirmar a REMOÇÃO de ${qtd} pontos do desbravador ${nomeDesbravador}?`);
+        }
+        return true;
+    }
+</script>
+{% endblock %}

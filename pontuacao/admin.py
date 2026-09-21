@@ -4,10 +4,9 @@ from .models import Unidade, Desbravador, Pontuacao, ConfiguracaoSistema
 
 @admin.register(ConfiguracaoSistema)
 class ConfiguracaoSistemaAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'ranking_publico', 'top3_publico', 'modo_top3', 'updated_at')
+    list_display = ('__str__', 'ranking_modo', 'ranking_limite_publico', 'mostrar_nomes_ranking', 'mostrar_pontos_ranking', 'updated_at')
 
     def has_add_permission(self, request):
-        # Impede criar mais de um registro de configuração (Singleton)
         if self.model.objects.exists():
             return False
         return super().has_add_permission(request)

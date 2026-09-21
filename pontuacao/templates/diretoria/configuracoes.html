@@ -1,0 +1,63 @@
+{% extends 'pontuacao/base_diretoria.html' %}
+
+{% block title %}Configurações do Ranking — Diretoria{% endblock %}
+
+{% block content %}
+<div class="container py-4 px-3" style="max-width: 650px;">
+    <div class="card card-custom p-4 shadow-sm">
+        <div class="mb-4">
+            <h1 class="h4 fw-bold text-dark mb-1"><i class="bi bi-sliders text-primary me-2"></i>Configurações de Visibilidade do Ranking</h1>
+            <p class="text-muted small mb-0">Controle como e quais informações do ranking aparecem na página pública do clube.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_ranking_modo" class="form-label fw-bold text-secondary">Modo do Ranking Público</label>
+                {{ form.ranking_modo }}
+                <small class="text-muted d-block mt-1">
+                    <strong>Completo:</strong> mostra todos os membros ativos.<br>
+                    <strong>Parcial:</strong> limita a exibição pública às primeiras N posições (Ex: Top 3, Top 5).<br>
+                    <strong>Oculto:</strong> nenhuma classificação pública é exibida.
+                </small>
+            </div>
+
+            <div class="mb-3 p-3 bg-light rounded-3 border">
+                <label for="id_ranking_limite_publico" class="form-label fw-bold text-secondary">Quantidade de Posições Públicas (Modo Parcial)</label>
+                {{ form.ranking_limite_publico }}
+                <small class="text-muted">Utilizado quando o modo estiver definido como <strong>Parcial</strong>. Ex: 3 (Top 3), 5 (Top 5), 10 (Top 10).</small>
+            </div>
+
+            <div class="mb-4 p-3 bg-light rounded-3 border">
+                <label class="form-label fw-bold text-secondary mb-2">Exposição de Elementos no Ranking Público</label>
+
+                <div class="form-check mb-2">
+                    {{ form.mostrar_nomes_ranking }}
+                    <label class="form-check-label fw-semibold" for="id_mostrar_nomes_ranking">
+                        Mostrar Nomes Reais (Se desativado, usará <em>Desbravador 1</em>, <em>Desbravador 2</em>...)
+                    </label>
+                </div>
+
+                <div class="form-check mb-2">
+                    {{ form.mostrar_pontos_ranking }}
+                    <label class="form-check-label fw-semibold" for="id_mostrar_pontos_ranking">
+                        Mostrar Pontuação Total no Ranking
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    {{ form.mostrar_fotos_ranking }}
+                    <label class="form-check-label fw-semibold" for="id_mostrar_fotos_ranking">
+                        Mostrar Fotos dos Desbravadores no Ranking
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-diretoria-primary w-100 py-2 fs-6 shadow-sm">
+                <i class="bi bi-save-fill me-1"></i> Salvar Configurações
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

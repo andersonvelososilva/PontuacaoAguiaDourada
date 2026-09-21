@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+
+{% block title %}Ranking — {{ NOME_DO_CLUBE }}{% endblock %}
+
+{% block content %}
+<!-- Banner Superior -->
+<div class="hero-banner text-center">
+    <div class="container">
+        <h1 class="hero-title"><i class="bi bi-trophy-fill text-warning me-2"></i>Ranking dos Desbravadores</h1>
+        <p class="hero-subtitle mb-0">Classificação oficial atualizada do clube.</p>
+    </div>
+</div>
+
+<div class="container px-3" style="max-width: 850px;">
+    <!-- Barra Superior de Botões de Navegação -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <a href="{% url 'pontuacao:index' %}" class="btn btn-light btn-sm rounded-pill px-3 border shadow-sm">
+            <i class="bi bi-house-fill me-1 text-primary"></i> Voltar para Início
+        </a>
+        <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-sm rounded-pill px-4 text-dark fw-bold shadow-sm">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Entrar no Sistema
+        </a>
+    </div>
+
+    <!-- MODO OCULTO OU SEM DADOS -->
+    {% if config.ranking_modo == 'OCULTO' or not ranking_list %}
+        <div class="row justify-content-center py-4">
+            <div class="col-12 col-md-10 text-center">
+                <div class="card card-custom p-5 shadow-sm">
+                    <div class="mb-3 text-warning display-3">
+                        <i class="bi bi-lock-fill"></i>
+                    </div>
+                    <h2 class="h4 fw-bold text-dark mb-2">Ranking Indisponível no Momento</h2>
+                    <p class="text-muted mb-4">
+                        O ranking público não está disponível no momento.<br>
+                        Para consultar sua própria pontuação e classificação, faça login.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a href="{% url 'pontuacao:index' %}" class="btn btn-light btn-lg rounded-pill px-4 border shadow-sm">
+                            <i class="bi bi-house-fill me-2"></i> Página Inicial
+                        </a>
+                        <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-lg rounded-pill px-5 fw-bold text-dark shadow-sm">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> ENTRAR
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+
+        <!-- MODO COMPLETO OU PARCIAL -->
+        <div class="mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="h4 fw-bold text-dark mb-0">
+                    <i class="bi bi-award-fill text-warning me-2"></i>
+                    {% if config.ranking_modo == 'PARCIAL' %}
+                        Top {{ config.ranking_limite_publico }} do Clube
+                    {% else %}
+                        Ranking Geral dos Desbravadores
+                    {% endif %}
+                </h2>
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'pontuacao:login' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                        <i class="bi bi-person-fill me-1"></i> Minha Posição
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="card card-custom p-3 p-md-4 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="text-center" style="width: 70px;">Pos.</th>
+                                {% if config.mostrar_fotos_ranking %}
+                                    <th scope="col" style="width: 60px;">Foto</th>
+                                {% endif %}
+                                <th scope="col">Desbravador</th>
+                                {% if config.mostrar_nomes_ranking %}
+                                    <th scope="col">Unidade</th>
+                                {% endif %}
+                                {% if config.mostrar_pontos_ranking %}
+                                    <th scope="col" class="text-end">Pontos</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in ranking_list %}
+                                <tr>
+                                    <!-- Posição -->
+                                    <td class="text-center fw-bold fs-5">
+                                        {% if forloop.counter == 1 %}
+                                            🥇
+                                        {% elif forloop.counter == 2 %}
+                                            🥈
+                                        {% elif forloop.counter == 3 %}
+                                            🥉
+                                        {% else %}
+                                            <span class="text-muted fs-6">#{{ forloop.counter }}</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Foto (Opcional) -->
+                                    {% if config.mostrar_fotos_ranking %}
+                                        <td>
+                                            {% if config.mostrar_nomes_ranking and item.foto %}
+                                                <img src="{{ item.foto.url }}" alt="{{ item.nome }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="bg-secondary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-lock-fill"></i>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+
+                                    <!-- Nome -->
+                                    <td>
+                                        {% if config.mostrar_nomes_ranking %}
+                                            <span class="fw-bold text-dark">{{ item.nome }}</span>
+                                        {% else %}
+                                            <span class="fw-bold text-muted"><i class="bi bi-lock-fill me-1"></i>Desbravador {{ forloop.counter }}</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Unidade -->
+                                    {% if config.mostrar_nomes_ranking %}
+                                        <td>
+                                            <span class="badge badge-unidade">Unidade {{ item.unidade.nome }}</span>
+                                        </td>
+                                    {% endif %}
+
+                                    <!-- Pontuação Total -->
+                                    {% if config.mostrar_pontos_ranking %}
+                                        <td class="text-end fw-extrabold">
+                                            {% if item.total_pontos > 0 %}
+                                                <span class="text-success fs-5 fw-bold">+{{ item.total_pontos }} pts</span>
+                                            {% elif item.total_pontos < 0 %}
+                                                <span class="text-danger fs-5 fw-bold">{{ item.total_pontos }} pts</span>
+                                            {% else %}
+                                                <span class="text-secondary fs-6">0 pts</span>
+                                            {% endif %}
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

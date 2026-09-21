@@ -1,0 +1,63 @@
+{% extends 'pontuacao/base_diretoria.html' %}
+
+{% block title %}Editar Desbravador — {{ object.nome }}{% endblock %}
+
+{% block content %}
+<div class="container py-4 px-3" style="max-width: 650px;">
+    <a href="{% url 'pontuacao:diretoria_desbravadores' %}" class="btn btn-light btn-sm rounded-pill px-3 mb-3 border">
+        <i class="bi bi-arrow-left me-1"></i> Voltar para Lista
+    </a>
+
+    <div class="card card-custom p-4">
+        <h1 class="h4 fw-bold text-dark mb-1"><i class="bi bi-person-gear text-primary me-2"></i>Editar Cadastro de {{ object.nome }}</h1>
+        <p class="text-muted small mb-3">Atualize o nome, foto, unidade, situação cadastral e conta vinculada.</p>
+
+        <!-- Banner Informativo sobre a Pontuação -->
+        <div class="alert alert-info rounded-3 p-3 small mb-4">
+            <i class="bi bi-info-circle-fill me-1"></i> <strong>Atenção:</strong> O total de pontos (Atualmente: <strong>{{ object.total_pontos }} pts</strong>) não é editável diretamente como um número isolado. Para lançar acréscimos ou punições, utilize a opção <a href="{% url 'pontuacao:diretoria_pontuacao' %}" class="alert-link">Lançar Pontuação</a>.
+        </div>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_nome" class="form-label fw-semibold">Nome Completo</label>
+                <input type="text" name="nome" id="id_nome" class="form-control" value="{{ form.nome.value|default:'' }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_unidade" class="form-label fw-semibold">Unidade</label>
+                {{ form.unidade }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_user" class="form-label fw-semibold">Conta de Usuário Vinculada (para Login)</label>
+                {{ form.user }}
+                <small class="text-muted d-block mt-1">Selecione uma conta de usuário do Django para permitir que o desbravador faça login.</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_foto" class="form-label fw-semibold">Foto de Perfil</label>
+                {% if object.foto %}
+                    <div class="mb-2">
+                        <img src="{{ object.foto.url }}" alt="{{ object.nome }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;">
+                    </div>
+                {% endif %}
+                <input type="file" name="foto" id="id_foto" class="form-control">
+            </div>
+
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" name="ativo" id="id_ativo" {% if form.ativo.value %}checked{% endif %}>
+                <label class="form-check-label fw-semibold" for="id_ativo">Desbravador Ativo no Clube</label>
+                <small class="text-muted d-block">Desbravadores inativos não aparecem no ranking público nem conseguem realizar login.</small>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-diretoria-primary flex-grow-1">
+                    <i class="bi bi-check-lg me-1"></i> Salvar Alterações
+                </button>
+                <a href="{% url 'pontuacao:diretoria_desbravadores' %}" class="btn btn-light border px-4">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

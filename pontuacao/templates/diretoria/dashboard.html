@@ -1,0 +1,78 @@
+{% extends 'pontuacao/base_diretoria.html' %}
+
+{% block title %}Dashboard Diretoria — {{ NOME_DO_CLUBE }}{% endblock %}
+
+{% block content %}
+<div class="container py-4 px-3">
+    <!-- Banner de Boas Vindas -->
+    <div class="p-4 rounded-4 text-white shadow-sm mb-4" style="background: linear-gradient(135deg, #1b2a4a 0%, #0d3b66 100%);">
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-shield-check text-warning me-2"></i>Painel da Diretoria</h1>
+        <p class="mb-0 opacity-75">Gerenciamento completo de desbravadores, lançamento de pontos e configurações de visibilidade.</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card card-custom p-3 text-center h-100">
+                <span class="text-primary display-6 mb-1"><i class="bi bi-people-fill"></i></span>
+                <span class="fs-3 fw-bold text-dark">{{ total_desbravadores_ativos }}</span>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Desbravadores Ativos</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card card-custom p-3 text-center h-100">
+                <span class="text-success display-6 mb-1"><i class="bi bi-flag-fill"></i></span>
+                <span class="fs-3 fw-bold text-dark">{{ total_unidades }}</span>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Unidades Ativas</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card card-custom p-3 text-center h-100">
+                <span class="text-warning display-6 mb-1"><i class="bi bi-receipt-cutoff"></i></span>
+                <span class="fs-3 fw-bold text-dark">{{ total_lancamentos }}</span>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Lançamentos de Pontos</small>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card card-custom p-3 text-center h-100">
+                <span class="text-info display-6 mb-1"><i class="bi bi-eye-fill"></i></span>
+                <span class="fs-6 fw-bold text-dark mt-1">{{ config.get_ranking_modo_display }}</span>
+                <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.72rem;">Modo Ranking Público</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Atalhos Rápidos para Operações do Dia a Dia -->
+    <h2 class="h5 fw-bold text-dark mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Ações Rápidas</h2>
+    <div class="row g-3">
+        <div class="col-12 col-sm-6 col-md-3">
+            <a href="{% url 'pontuacao:diretoria_desbravadores' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-primary">
+                <div class="fs-1 text-primary mb-2"><i class="bi bi-person-lines-fill"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Desbravadores</h3>
+                <small class="text-muted">Consultar e editar cadastro</small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+            <a href="{% url 'pontuacao:diretoria_pontuacao' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-success">
+                <div class="fs-1 text-success mb-2"><i class="bi bi-plus-slash-minus"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Lançar Pontuação</h3>
+                <small class="text-muted">Adicionar ou remover pontos (+/-)</small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+            <a href="{% url 'pontuacao:diretoria_ranking' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-warning">
+                <div class="fs-1 text-warning mb-2"><i class="bi bi-trophy-fill"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Ranking Completo</h3>
+                <small class="text-muted">Ver classificação administrativa</small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-3">
+            <a href="{% url 'pontuacao:diretoria_configuracoes' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-info">
+                <div class="fs-1 text-info mb-2"><i class="bi bi-sliders"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Configurações</h3>
+                <small class="text-muted">Regras de exibição pública</small>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

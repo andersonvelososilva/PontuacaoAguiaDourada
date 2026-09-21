@@ -44,7 +44,7 @@ class Desbravador(models.Model):
     ativo = models.BooleanField(
         default=True, 
         verbose_name="Ativo",
-        help_text="Desbravadores inativos não aparecem no ranking ou Top 3 públicos."
+        help_text="Desbravadores inativos não aparecem no ranking público."
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Criado em")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Atualizado em")
@@ -60,6 +60,8 @@ class Desbravador(models.Model):
     @property
     def total_pontos(self):
         """Calcula o total acumulado derivado do histórico de registros."""
+        if hasattr(self, 'total_pontos_calc') and self.total_pontos_calc is not None:
+            return self.total_pontos_calc
         total = self.pontuacoes.aggregate(total=models.Sum('pontos'))['total']
         return total if total is not None else 0
 
@@ -97,29 +99,38 @@ class Pontuacao(models.Model):
 
 
 class ConfiguracaoSistema(models.Model):
-    MODO_TOP3_CHOICES = [
-        ('NOME_FOTO_PONTOS', 'Nome + Foto + Pontos'),
-        ('NOME_FOTO_SEMPONTOS', 'Nome + Foto sem Pontos'),
-        ('OCULTO_PONTOS', 'Apenas Pontos com Identidade Oculta (🔒)'),
-        ('NOME_PONTOS_SEMFOTO', 'Nome + Pontos sem Foto'),
+    MODO_RANKING_CHOICES = [
+        ('COMPLETO', 'Ranking Público Completo'),
+        ('PARCIAL', 'Ranking Parcial (Limitado)'),
+        ('OCULTO', 'Ranking Oculto'),
     ]
 
-    ranking_publico = models.BooleanField(
-        default=False,
-        verbose_name="Exibir Ranking Publicamente",
-        help_text="Se desativado, o ranking geral não exibirá nomes ou posições públicas."
+    ranking_modo = models.CharField(
+        max_length=20,
+        choices=MODO_RANKING_CHOICES,
+        default='PARCIAL',
+        verbose_name="Modo de Exibição do Ranking",
+        help_text="Completo: exibe todos os membros ativos. Parcial: exibe até o limite configurado. Oculto: não exibe público."
     )
-    top3_publico = models.BooleanField(
+    ranking_limite_publico = models.IntegerField(
+        default=3,
+        verbose_name="Limite de Posições Públicas (Modo Parcial)",
+        help_text="Ex: 3 para Top 3, 5 para Top 5, 10 para Top 10."
+    )
+    mostrar_nomes_ranking = models.BooleanField(
         default=True,
-        verbose_name="Exibir Top 3 Publicamente",
-        help_text="Se desativado, a seção do Top 3 será oculta na página pública."
+        verbose_name="Mostrar Nomes Reais",
+        help_text="Se desativado, os nomes serão ocultados (Ex: Desbravador 1)."
     )
-    modo_top3 = models.CharField(
-        max_length=30,
-        choices=MODO_TOP3_CHOICES,
-        default='NOME_FOTO_PONTOS',
-        verbose_name="Modo de Exibição do Top 3",
-        help_text="Define quais elementos (nome, foto, pontos) aparecem no Top 3 público."
+    mostrar_pontos_ranking = models.BooleanField(
+        default=True,
+        verbose_name="Mostrar Pontuação Total",
+        help_text="Se desativado, o total de pontos não aparecerá no ranking público."
+    )
+    mostrar_fotos_ranking = models.BooleanField(
+        default=False,
+        verbose_name="Mostrar Fotos dos Desbravadores",
+        help_text="Exibe a foto do desbravador no ranking público se disponível."
     )
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Última Atualização")
 
