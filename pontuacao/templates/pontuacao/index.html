@@ -3,6 +3,36 @@
 
 {% block title %}Sistema de Pontos - {{ NOME_DO_CLUBE }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    @keyframes floatEagle {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    .logo-floating {
+        animation: floatEagle 3.6s ease-in-out infinite;
+        max-width: 240px;
+        height: auto;
+        filter: drop-shadow(0 8px 18px rgba(0,0,0,0.18));
+        will-change: transform;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .logo-floating {
+            animation: none;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container py-4 px-3">
     <div class="row justify-content-center">
@@ -12,8 +42,7 @@
                 <div class="text-center mb-3">
                     <img src="{% static 'images/logo.png' %}" 
                          alt="Logo {{ NOME_DO_CLUBE }}" 
-                         class="img-fluid mb-2" 
-                         style="max-width: 240px; height: auto; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.15)); transition: transform 0.3s ease;">
+                         class="img-fluid mb-2 logo-floating">
                 </div>
 
                 <!-- Título Solicitado -->
