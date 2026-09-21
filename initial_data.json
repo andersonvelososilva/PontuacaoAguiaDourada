@@ -1,0 +1,1077 @@
+[
+{
+  "model": "pontuacao.unidade",
+  "pk": 4,
+  "fields": {
+    "nome": "Arara Azul",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:00.469Z",
+    "updated_at": "2026-09-19T19:56:00.469Z"
+  }
+},
+{
+  "model": "pontuacao.unidade",
+  "pk": 5,
+  "fields": {
+    "nome": "Harpia",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:00.473Z",
+    "updated_at": "2026-09-19T19:56:00.473Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 7,
+  "fields": {
+    "user": 4,
+    "nome": "Ana Sofia",
+    "unidade": 4,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:00.860Z",
+    "updated_at": "2026-09-19T19:56:00.860Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 8,
+  "fields": {
+    "user": 5,
+    "nome": "Davi Luis",
+    "unidade": 5,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:01.242Z",
+    "updated_at": "2026-09-19T19:56:01.242Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 9,
+  "fields": {
+    "user": 6,
+    "nome": "Mariano",
+    "unidade": 5,
+    "foto": "desbravadores/Mariano.jpg",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:01.623Z",
+    "updated_at": "2026-09-19T20:54:04.083Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 10,
+  "fields": {
+    "user": 7,
+    "nome": "Luis Paulo",
+    "unidade": 5,
+    "foto": "desbravadores/Luis_Paulo.jpg",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:02.013Z",
+    "updated_at": "2026-09-19T20:54:26.803Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 11,
+  "fields": {
+    "user": 8,
+    "nome": "João Inácio",
+    "unidade": 5,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:02.405Z",
+    "updated_at": "2026-09-19T19:56:02.405Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 12,
+  "fields": {
+    "user": 9,
+    "nome": "Aylla Suellen",
+    "unidade": 4,
+    "foto": "desbravadores/Aylla_Suellen.jpg",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:02.790Z",
+    "updated_at": "2026-09-19T20:49:51.751Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 13,
+  "fields": {
+    "user": 10,
+    "nome": "Arthur",
+    "unidade": 5,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:03.208Z",
+    "updated_at": "2026-09-19T19:56:03.208Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 14,
+  "fields": {
+    "user": 11,
+    "nome": "Deuzilane",
+    "unidade": 4,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:03.596Z",
+    "updated_at": "2026-09-19T19:56:03.596Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 15,
+  "fields": {
+    "user": 12,
+    "nome": "Isis",
+    "unidade": 4,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:04.037Z",
+    "updated_at": "2026-09-19T19:56:04.037Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 16,
+  "fields": {
+    "user": 13,
+    "nome": "Renan",
+    "unidade": 5,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:04.428Z",
+    "updated_at": "2026-09-19T19:56:04.428Z"
+  }
+},
+{
+  "model": "pontuacao.desbravador",
+  "pk": 17,
+  "fields": {
+    "user": 14,
+    "nome": "João Lucas",
+    "unidade": 5,
+    "foto": "",
+    "ativo": true,
+    "created_at": "2026-09-19T19:56:04.807Z",
+    "updated_at": "2026-09-19T19:56:04.807Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 24,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:12:52.624Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:12:52.628Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 25,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:13:13.574Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:13:13.574Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 26,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço (na igreja)",
+    "data_hora": "2026-09-19T20:13:46.033Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:13:46.033Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 27,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço (na igreja)",
+    "data_hora": "2026-09-19T20:13:57.599Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:13:57.600Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 28,
+  "fields": {
+    "desbravador": 11,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:14:11.431Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:14:11.431Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 29,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:14:22.188Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:14:22.189Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 30,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:14:38.959Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:14:38.959Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 31,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço (escola)",
+    "data_hora": "2026-09-19T20:14:54.848Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:14:54.848Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 32,
+  "fields": {
+    "desbravador": 12,
+    "pontos": -2,
+    "motivo": "Correção pontuação",
+    "data_hora": "2026-09-19T20:15:46.223Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:15:46.224Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 33,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:16:38.123Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:16:38.123Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 34,
+  "fields": {
+    "desbravador": 8,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:16:48.477Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:16:48.477Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 35,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:17:04.342Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:17:04.342Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 36,
+  "fields": {
+    "desbravador": 15,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:17:18.948Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:17:18.948Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 37,
+  "fields": {
+    "desbravador": 15,
+    "pontos": 2,
+    "motivo": "Foto Semana do Lenço (em grupo)",
+    "data_hora": "2026-09-19T20:17:39.721Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:17:39.721Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 38,
+  "fields": {
+    "desbravador": 14,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:17:48.747Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:17:48.748Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 39,
+  "fields": {
+    "desbravador": 14,
+    "pontos": 2,
+    "motivo": "Foto Semana do Lenço (em grupo)",
+    "data_hora": "2026-09-19T20:17:57.292Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:17:57.292Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 40,
+  "fields": {
+    "desbravador": 16,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:18:06.551Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:18:06.551Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 41,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:18:21.277Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:18:21.277Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 42,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 3,
+    "motivo": "Foto Semana do Lenço (escola)",
+    "data_hora": "2026-09-19T20:18:42.966Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:18:42.967Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 43,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:19:01.207Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:19:01.207Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 44,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:19:11.760Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:19:11.760Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 45,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:19:21.424Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:19:21.424Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 46,
+  "fields": {
+    "desbravador": 15,
+    "pontos": 7,
+    "motivo": "Foto Semana do Lenço (em grupo)",
+    "data_hora": "2026-09-19T20:19:40.290Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:19:40.290Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 47,
+  "fields": {
+    "desbravador": 14,
+    "pontos": 7,
+    "motivo": "Foto Semana do Lenço (em grupo)",
+    "data_hora": "2026-09-19T20:19:51.714Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:19:51.714Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 48,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:20:06.911Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:20:06.911Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 49,
+  "fields": {
+    "desbravador": 11,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:22:55.591Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:22:55.591Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 50,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 6,
+    "motivo": "Foto Semana do Lenço (na rua)",
+    "data_hora": "2026-09-19T20:23:34.166Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:23:34.166Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 51,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:23:57.485Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:23:57.485Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 52,
+  "fields": {
+    "desbravador": 17,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:24:08.027Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:24:08.027Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 53,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:24:18.419Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:24:18.419Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 54,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:24:34.549Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:24:34.550Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 55,
+  "fields": {
+    "desbravador": 8,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:24:49.136Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:24:49.136Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 56,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:25:01.444Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:25:01.445Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 57,
+  "fields": {
+    "desbravador": 7,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:25:14.797Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:25:14.797Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 58,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:25:28.200Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:25:28.200Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 59,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 7,
+    "motivo": "Foto Semana do Lenço (em público)",
+    "data_hora": "2026-09-19T20:25:55.514Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:25:55.514Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 60,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:26:15.592Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:26:15.592Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 61,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:27:06.213Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:27:06.214Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 62,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:27:21.821Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:27:21.822Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 63,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:27:34.806Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:27:34.806Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 64,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 8,
+    "motivo": "Foto Semana do Lenço (escola)",
+    "data_hora": "2026-09-19T20:28:05.755Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:28:05.756Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 65,
+  "fields": {
+    "desbravador": 15,
+    "pontos": 7,
+    "motivo": "Foto Semana do Lenço (em grupo)",
+    "data_hora": "2026-09-19T20:28:20.985Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:28:20.985Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 66,
+  "fields": {
+    "desbravador": 14,
+    "pontos": 7,
+    "motivo": "Foto Semana do Lenço (em grupo)",
+    "data_hora": "2026-09-19T20:28:31.671Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:28:31.671Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 67,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:28:43.578Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:28:43.578Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 68,
+  "fields": {
+    "desbravador": 11,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:28:59.762Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:28:59.763Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 69,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 8,
+    "motivo": "Foto Semana do Lenço (escola)",
+    "data_hora": "2026-09-19T20:29:11.676Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:29:11.676Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 70,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:29:57.396Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:29:57.396Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 71,
+  "fields": {
+    "desbravador": 12,
+    "pontos": 6,
+    "motivo": "Foto Semana do Lenço (na rua)",
+    "data_hora": "2026-09-19T20:30:20.552Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:30:20.552Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 72,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:30:32.703Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:30:32.704Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 73,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:30:42.914Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:30:42.914Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 74,
+  "fields": {
+    "desbravador": 8,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:30:56.675Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:30:56.676Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 75,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:31:06.726Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:31:06.726Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 76,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:31:17.946Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:31:17.947Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 77,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:31:27.030Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:31:27.030Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 78,
+  "fields": {
+    "desbravador": 13,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:31:39.537Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:31:39.537Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 79,
+  "fields": {
+    "desbravador": 9,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:31:50.860Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:31:50.860Z"
+  }
+},
+{
+  "model": "pontuacao.pontuacao",
+  "pk": 80,
+  "fields": {
+    "desbravador": 10,
+    "pontos": 5,
+    "motivo": "Foto Semana do Lenço",
+    "data_hora": "2026-09-19T20:45:53.944Z",
+    "criado_por": 1,
+    "created_at": "2026-09-19T20:45:53.944Z"
+  }
+},
+{
+  "model": "pontuacao.configuracaosistema",
+  "pk": 1,
+  "fields": {
+    "ranking_modo": "COMPLETO",
+    "ranking_limite_publico": 3,
+    "mostrar_nomes_ranking": true,
+    "mostrar_pontos_ranking": true,
+    "mostrar_fotos_ranking": false,
+    "updated_at": "2026-09-21T01:21:33.417Z"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$e1d9Bx3WF4esjwsTopd7Je$C42Jo/Yk5iKxk24BfJgOQC+3N3U/zTlpXjhm81h8Y1E=",
+    "last_login": "2026-09-21T01:19:24.974Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@clube.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-09-16T18:36:24.317Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$kF3C7Ax8OrI3rxsxfeAbhp$80rpXchF6amb1olAwN60yrxMotSYCii/0x5CsHKek0s=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "anasofia",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:00.475Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$CuHGTYUGJFvnMvOtfI3c2t$OT329B5LqbqsJ2X1wrBxyJAFTABHzcGUBMT847MJ6fA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "daviluis",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:00.863Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$60ZYoaHB3DEJoKvqfdpejZ$MjSp5QEJIvQp83BOwrKdtkIFZdu2G7t6AJCg6Iu/uw8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "mariano",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:01.244Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 7,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$BUudBMwAjlM7qJ9Qs2t5E1$8XowxWuHCfj7Fl5g150hbUlM6PXgRuUSNAN1OXq4Dag=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "luispaulo",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:01.626Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 8,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$KBBtOyFKHcHbMizOe4qxUV$5heLHlpb0syUQfhAZq2WezmRQeuIZrwJAAYfJ5vk9aw=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "joaoinacio",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:02.015Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 9,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$eAQG1SgTONa2f2oEVgsIyb$ZHALEiN/QdAA2TppI+tcPL9WXKUpbBs5+DzbrpxGk70=",
+    "last_login": "2026-09-19T20:22:15.170Z",
+    "is_superuser": false,
+    "username": "ayllasuellen",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:02.408Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Zfp5yNMhPSQbFGDaE7cGfd$5jOF/Ywax/7RkX9YOfwYbX+f98RwBlnHP0e4WwEiz5Y=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "arthur",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:02.793Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 11,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XpPWj2fbXIdDiQH2SckQez$kMagWpigmsR8LHEbrxBbYmIP8NpKou4TIVcyt3VGoWo=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "deuzilane",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:03.212Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 12,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ha0hUNsElkv4rmzAmsJTVc$V0YLgC52TmYDko5/RhrC6wcRpBg6IUsq35Oh9Tpt6fs=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "isis",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:03.605Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 13,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$AsPYrBb6JiDIcqgWwJd5a1$skALwxO0SAh4QAYv1/bdltim6YVXbBMBeazIg84KSTg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "renan",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:04.041Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 14,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$IcBmlPyz9x6UuNofLHgL8o$p2OXXtA/OhspruKaUS2zzXzPFci0VFUMA4iizAkcpZQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "joaolucas",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-19T19:56:04.433Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
