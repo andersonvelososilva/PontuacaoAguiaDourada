@@ -1,24 +1,28 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Sistema de Pontos - {{ NOME_DO_CLUBE }}{% endblock %}
 
 {% block content %}
-<div class="container py-5 px-3">
+<div class="container py-4 px-3">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-6 text-center">
             <div class="card card-custom p-4 p-md-5 shadow-sm border-0">
-                <!-- Ícone / Emblema -->
-                <div class="brand-icon mx-auto mb-4" style="width: 70px; height: 70px; font-size: 2.2rem; border-radius: 18px;">
-                    <i class="bi bi-shield-shaded"></i>
+                <!-- Logo do Clube Águia Dourada -->
+                <div class="text-center mb-3">
+                    <img src="{% static 'images/logo.png' %}" 
+                         alt="Logo {{ NOME_DO_CLUBE }}" 
+                         class="img-fluid mb-2" 
+                         style="max-width: 240px; height: auto; filter: drop-shadow(0 6px 16px rgba(0,0,0,0.15)); transition: transform 0.3s ease;">
                 </div>
 
                 <!-- Título Solicitado -->
                 <h1 class="h3 fw-bold text-dark mb-2">Sistema de Pontos - {{ NOME_DO_CLUBE }}</h1>
                 <p class="text-muted mb-4 fs-6">
-                    Acompanhe o desempenho, pontuação e conquistas do nosso clube de desbravadores.
+                    Acompanhe o desempenho, pontuação e conquistas dos nossos desbravadores.
                 </p>
 
-                <!-- Opções de Navegação Requeridas -->
+                <!-- Opções para Ver Ranking e Entrar no Sistema -->
                 <div class="d-grid gap-3 col-12 mx-auto">
                     <a href="{% url 'pontuacao:public_ranking' %}" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm py-3">
                         <i class="bi bi-trophy-fill me-2 text-warning"></i> Ver Ranking

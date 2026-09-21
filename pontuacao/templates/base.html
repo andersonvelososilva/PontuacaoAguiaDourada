@@ -149,8 +149,8 @@
     <nav class="navbar navbar-dark navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="{% url 'pontuacao:index' %}">
-                <span class="brand-icon"><i class="bi bi-shield-shaded"></i></span>
-                <span>Sistema de Pontos - {{ NOME_DO_CLUBE }}</span>
+                <img src="{% static 'images/logo.png' %}" alt="Logo {{ NOME_DO_CLUBE }}" style="height: 36px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" class="me-1">
+                <span>{{ NOME_DO_CLUBE }}</span>
             </a>
             <div class="d-flex align-items-center gap-2">
                 <a href="{% url 'pontuacao:public_ranking' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
