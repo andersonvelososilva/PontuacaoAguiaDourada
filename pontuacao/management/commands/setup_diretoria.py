@@ -32,3 +32,13 @@ class Command(BaseCommand):
         j_user.set_password('Cira0603')
         j_user.save()
         self.stdout.write(self.style.SUCCESS("Conta 'Jancira Dantas' (usuario: janciradantas) criada/atualizada com sucesso."))
+
+        # 4. Garantir que os dados dos desbravadores estao carregados se o banco estiver novo/vazio
+        from pontuacao.models import Desbravador
+        from django.core.management import call_command
+        if Desbravador.objects.count() == 0:
+            try:
+                call_command('loaddata', 'initial_data.json')
+                self.stdout.write(self.style.SUCCESS("Dados dos desbravadores restaurados automaticamente do initial_data.json."))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Erro ao carregar initial_data.json: {e}"))
