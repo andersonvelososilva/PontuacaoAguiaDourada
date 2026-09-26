@@ -82,7 +82,10 @@
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     {% if d.foto %}
-                                        <img src="{{ d.foto.url }}" alt="{{ d.nome }}" class="rounded-circle" style="width: 42px; height: 42px; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                                        <img src="{{ d.foto.url }}" alt="{{ d.nome }}" class="rounded-circle" style="width: 42px; height: 42px; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">
+                                        <div class="bg-primary text-white rounded-circle d-none align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px; font-size: 1.1rem;">
+                                            {{ d.nome|slice:":1" }}
+                                        </div>
                                     {% else %}
                                         <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px; font-size: 1.1rem;">
                                             {{ d.nome|slice:":1" }}
@@ -148,7 +151,10 @@
                         <!-- Link direto na foto -->
                         <a href="{% url 'pontuacao:diretoria_desbravador_edit' d.pk %}" class="d-block mb-3 text-decoration-none">
                             {% if d.foto %}
-                                <img src="{{ d.foto.url }}" alt="{{ d.nome }}" class="rounded-circle shadow" style="width: 110px; height: 110px; object-fit: cover; border: 4px solid #ffffff; transition: transform 0.2s;">
+                                <img src="{{ d.foto.url }}" alt="{{ d.nome }}" class="rounded-circle shadow" style="width: 110px; height: 110px; object-fit: cover; border: 4px solid #ffffff; transition: transform 0.2s;" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('d-none');">
+                                <div class="bg-primary text-white rounded-circle d-none align-items-center justify-content-center fw-bold shadow mx-auto" style="width: 110px; height: 110px; font-size: 2.8rem; border: 4px solid #ffffff;">
+                                    {{ d.nome|slice:":1" }}
+                                </div>
                             {% else %}
                                 <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center fw-bold shadow mx-auto" style="width: 110px; height: 110px; font-size: 2.8rem; border: 4px solid #ffffff;">
                                     {{ d.nome|slice:":1" }}
