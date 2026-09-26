@@ -58,6 +58,21 @@ class Desbravador(models.Model):
         return f"{self.nome} ({self.unidade.nome})"
 
     @property
+    def get_foto_url(self):
+        """Retorna a URL formatada da foto (Cloudinary ou local) com fallback seguro."""
+        if not self.foto:
+            return None
+        try:
+            url = self.foto.url
+            cloud_name = getattr(settings, 'CLOUDINARY_STORAGE', {}).get('CLOUD_NAME')
+            if cloud_name and not url.startswith('http'):
+                clean_path = str(self.foto).lstrip('/')
+                return f"https://res.cloudinary.com/{cloud_name}/image/upload/{clean_path}"
+            return url
+        except Exception:
+            return None
+
+    @property
     def total_pontos(self):
         """Calcula o total acumulado derivado do histórico de registros."""
         if hasattr(self, 'total_pontos_calc') and self.total_pontos_calc is not None:
