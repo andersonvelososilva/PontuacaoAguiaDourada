@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 
 class Command(BaseCommand):
-    help = "Cria/atualiza as contas da Diretoria (Fernanda Mazur, Jancira Dantas e Admin)"
+    help = "Cria/atualiza as contas da Diretoria (Fernanda Mazur, Jancira Dantas e Admin) e senhas dos Desbravadores"
 
     def handle(self, *args, **options):
         # 1. Admin
@@ -42,3 +42,29 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS("Dados dos desbravadores restaurados automaticamente do initial_data.json."))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"Erro ao carregar initial_data.json: {e}"))
+
+        # 5. Atualizar senhas dos desbravadores no padrão: animal + 3 dígitos únicos
+        senhas_desbravadores = {
+            'anasofia': 'aguia248',
+            'arthur': 'leao715',
+            'ayllasuellen': 'tigre382',
+            'daviluis': 'urso904',
+            'deuzilane': 'panda526',
+            'isis': 'zebra163',
+            'joaoinacio': 'puma841',
+            'joaolucas': 'falcao679',
+            'luispaulo': 'pantera457',
+            'mariano': 'tubarao291',
+            'renan': 'gaviao738',
+        }
+
+        count = 0
+        for username, pwd in senhas_desbravadores.items():
+            try:
+                u = User.objects.get(username=username)
+                u.set_password(pwd)
+                u.save()
+                count += 1
+            except User.DoesNotExist:
+                pass
+        self.stdout.write(self.style.SUCCESS(f"{count} senhas de desbravadores atualizadas no banco de dados."))
