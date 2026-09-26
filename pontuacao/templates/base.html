@@ -222,6 +222,7 @@
             window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/static/js/sw.js').then(function(registration) {
                     console.log('ServiceWorker registrado:', registration.scope);
+                    registration.update();
                 }).catch(function(err) {
                     console.log('Erro no ServiceWorker:', err);
                 });
