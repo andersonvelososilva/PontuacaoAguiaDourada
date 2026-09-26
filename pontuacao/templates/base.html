@@ -43,6 +43,20 @@
             flex-direction: column;
         }
 
+        .btn-custom-primary {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-custom-primary:hover, .btn-custom-primary:focus {
+            background-color: var(--secondary-blue);
+            color: #ffffff;
+        }
+
         .navbar-custom {
             background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -213,6 +227,32 @@
                 });
             });
         }
+
+        // Indicador de Carregamento nos Formulários
+        document.addEventListener('DOMContentLoaded', function () {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    setTimeout(function () {
+                        if (e.defaultPrevented) return;
+                        const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                        if (submitBtn && !submitBtn.disabled) {
+                            const originalWidth = submitBtn.offsetWidth;
+                            if (originalWidth > 0) {
+                                submitBtn.style.minWidth = originalWidth + 'px';
+                            }
+                            const loadingText = submitBtn.getAttribute('data-loading-text') || 'Aguarde...';
+                            if (submitBtn.tagName === 'BUTTON') {
+                                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' + loadingText;
+                            } else {
+                                submitBtn.value = loadingText;
+                            }
+                            submitBtn.disabled = true;
+                        }
+                    }, 0);
+                });
+            });
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

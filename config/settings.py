@@ -100,6 +100,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+WHITENOISE_MANIFEST_STRICT = False
 
 # Media files (Uploads)
 MEDIA_URL = '/media/'
@@ -137,4 +138,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configurações do Clube de Desbravadores
 NOME_DO_CLUBE = config('NOME_DO_CLUBE', default='Clube de Desbravadores Águia Dourada')
 EXIBIR_HISTORICO_PUBLICO = config('EXIBIR_HISTORICO_PUBLICO', default=True, cast=bool)
-VERSAO_APP = config('VERSAO_APP', default='v1.2')
+VERSAO_APP = config('VERSAO_APP', default='v1.3')

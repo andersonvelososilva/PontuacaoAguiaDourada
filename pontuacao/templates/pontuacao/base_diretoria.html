@@ -172,6 +172,33 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Indicador de Carregamento nos Formulários
+        document.addEventListener('DOMContentLoaded', function () {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(function (form) {
+                form.addEventListener('submit', function (e) {
+                    setTimeout(function () {
+                        if (e.defaultPrevented) return;
+                        const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
+                        if (submitBtn && !submitBtn.disabled) {
+                            const originalWidth = submitBtn.offsetWidth;
+                            if (originalWidth > 0) {
+                                submitBtn.style.minWidth = originalWidth + 'px';
+                            }
+                            const loadingText = submitBtn.getAttribute('data-loading-text') || 'Aguarde...';
+                            if (submitBtn.tagName === 'BUTTON') {
+                                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' + loadingText;
+                            } else {
+                                submitBtn.value = loadingText;
+                            }
+                            submitBtn.disabled = true;
+                        }
+                    }, 0);
+                });
+            });
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
