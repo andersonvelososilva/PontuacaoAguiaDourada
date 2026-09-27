@@ -178,28 +178,46 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Indicador de Carregamento nos Cliques de Navegação e Menu
+        // Indicador de Carregamento nos Cliques de Navegação, Menus e Cartões de Atalho
         document.addEventListener('DOMContentLoaded', function () {
-            const clickables = document.querySelectorAll('a.btn, a.nav-link, a.nav-link-custom, .navbar-brand, a.list-group-item');
-            clickables.forEach(function (el) {
+            const allLinks = document.querySelectorAll('a[href]');
+            allLinks.forEach(function (el) {
                 el.addEventListener('click', function (e) {
                     const href = el.getAttribute('href');
-                    if (!href || href.startsWith('#') || href.startsWith('javascript:') || el.getAttribute('target') === '_blank') {
+                    const target = el.getAttribute('target');
+                    const toggle = el.getAttribute('data-bs-toggle');
+
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:') || target === '_blank' || toggle) {
                         return;
                     }
+
                     if (el.classList.contains('is-navigating')) {
                         e.preventDefault();
                         return;
                     }
+
                     el.classList.add('is-navigating', 'pe-none');
                     el.style.opacity = '0.75';
 
-                    const icon = el.querySelector('i.bi');
-                    if (icon) {
-                        icon.className = 'spinner-border spinner-border-sm me-1';
-                        icon.setAttribute('role', 'status');
+                    // Caso o elemento clicado seja um Cartão de Atalho
+                    if (el.classList.contains('card') || el.classList.contains('card-custom') || el.closest('.card-custom')) {
+                        const iconDiv = el.querySelector('.fs-1') || el.querySelector('.card-body');
+                        const icon = el.querySelector('i.bi');
+                        if (iconDiv) {
+                            iconDiv.innerHTML = '<div class="spinner-border text-warning my-2" role="status" style="width: 2.5rem; height: 2.5rem;"><span class="visually-hidden">Carregando...</span></div>';
+                        } else if (icon) {
+                            icon.className = 'spinner-border spinner-border-sm me-1';
+                            icon.setAttribute('role', 'status');
+                        }
                     } else {
-                        el.insertAdjacentHTML('afterbegin', '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>');
+                        // Botões e links padrão de navbar/menu
+                        const icon = el.querySelector('i.bi');
+                        if (icon) {
+                            icon.className = 'spinner-border spinner-border-sm me-1';
+                            icon.setAttribute('role', 'status');
+                        } else {
+                            el.insertAdjacentHTML('afterbegin', '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>');
+                        }
                     }
                 });
             });
