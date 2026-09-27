@@ -1,10 +1,9 @@
 import os
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from pontuacao.models import Desbravador
 
 class Command(BaseCommand):
-    help = "Uploads all local media photos of desbravadores directly to Cloudinary"
+    help = "Uploads all local media photos of desbravadores and logo directly to Cloudinary"
 
     def handle(self, *args, **options):
         cloud_name = getattr(settings, 'CLOUDINARY_STORAGE', {}).get('CLOUD_NAME')
@@ -21,6 +20,23 @@ class Command(BaseCommand):
             api_secret=settings.CLOUDINARY_STORAGE['API_SECRET']
         )
 
+        # 1. Upload static logo.png to Cloudinary
+        logo_path = os.path.join(settings.BASE_DIR, 'pontuacao', 'static', 'images', 'logo.png')
+        if os.path.exists(logo_path):
+            try:
+                res = cloudinary.uploader.upload(
+                    logo_path,
+                    public_id="logo_aguia_dourada",
+                    folder="static",
+                    use_filename=False,
+                    unique_filename=False,
+                    overwrite=True
+                )
+                self.stdout.write(self.style.SUCCESS(f"Logo enviado para Cloudinary: {res.get('secure_url')}"))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f"Erro ao enviar logo para Cloudinary: {e}"))
+
+        # 2. Upload desbravadores photos
         media_dir = os.path.join(settings.BASE_DIR, 'media', 'desbravadores')
         if not os.path.exists(media_dir):
             self.stdout.write(self.style.WARNING(f"Diretorio {media_dir} nao encontrado."))

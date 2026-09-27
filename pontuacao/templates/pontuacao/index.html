@@ -40,7 +40,8 @@
             <div class="card card-custom p-4 p-md-5 shadow-sm border-0">
                 <!-- Logo do Clube Águia Dourada -->
                 <div class="text-center mb-3">
-                    <img src="{% static 'images/logo.png' %}" 
+                    <img src="{{ LOGO_URL }}" 
+                         onerror="this.onerror=null; this.src='{% static 'images/logo.png' %}';"
                          alt="Logo {{ NOME_DO_CLUBE }}" 
                          class="img-fluid mb-2 logo-floating">
                 </div>

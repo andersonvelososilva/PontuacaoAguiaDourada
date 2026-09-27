@@ -166,7 +166,7 @@
     <nav class="navbar navbar-dark navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="{% url 'pontuacao:index' %}">
-                <img src="{% static 'images/logo.png' %}" alt="Logo {{ NOME_DO_CLUBE }}" style="height: 36px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" class="me-1">
+                <img src="{{ LOGO_URL }}" onerror="this.onerror=null; this.src='{% static 'images/logo.png' %}';" alt="Logo {{ NOME_DO_CLUBE }}" style="height: 36px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" class="me-1">
                 <span>Clube Águia Dourada</span>
             </a>
             <div class="d-flex align-items-center gap-2">
