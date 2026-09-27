@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from pontuacao.models import Unidade, Desbravador
 
 class Command(BaseCommand):
-    help = "Cria/atualiza as contas da Diretoria, senhas dos Desbravadores e a Unidade Aspirantes"
+    help = "Cria/atualiza as contas da Diretoria, senhas dos Desbravadores, Unidade Aspirantes e Desbravadores de Teste"
 
     def handle(self, *args, **options):
         # 1. Admin
@@ -73,3 +73,17 @@ class Command(BaseCommand):
             except User.DoesNotExist:
                 pass
         self.stdout.write(self.style.SUCCESS(f"{count} senhas de desbravadores atualizadas no banco de dados."))
+
+        # 7. Criar 3 Desbravadores de Teste para Treinamento da Diretoria (sem conta de usuário)
+        testes = ["Desbravador Teste 1", "Desbravador Teste 2", "Desbravador Teste 3"]
+        for nome_t in testes:
+            d_t, t_created = Desbravador.objects.get_or_create(
+                nome=nome_t,
+                defaults={
+                    'unidade': unidade_asp,
+                    'user': None,
+                    'ativo': True
+                }
+            )
+            if t_created:
+                self.stdout.write(self.style.SUCCESS(f"Desbravador de teste '{nome_t}' criado com sucesso."))

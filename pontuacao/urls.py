@@ -17,6 +17,7 @@ urlpatterns = [
     path('diretoria/desbravadores/', views.DiretoriaDesbravadorListView.as_view(), name='diretoria_desbravadores'),
     path('diretoria/desbravadores/<int:pk>/', views.DiretoriaDesbravadorUpdateView.as_view(), name='diretoria_desbravador_edit'),
     path('diretoria/pontuacao/', views.DiretoriaLancarPontuacaoView.as_view(), name='diretoria_pontuacao'),
+    path('diretoria/historico/', views.DiretoriaHistoricoGeralView.as_view(), name='diretoria_historico'),
     path('diretoria/ranking/', views.DiretoriaRankingView.as_view(), name='diretoria_ranking'),
     path('diretoria/configuracoes/', views.DiretoriaConfiguracoesView.as_view(), name='diretoria_configuracoes'),
 ]

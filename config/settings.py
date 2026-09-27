@@ -138,4 +138,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configurações do Clube de Desbravadores
 NOME_DO_CLUBE = config('NOME_DO_CLUBE', default='Clube de Desbravadores Águia Dourada')
 EXIBIR_HISTORICO_PUBLICO = config('EXIBIR_HISTORICO_PUBLICO', default=True, cast=bool)
-VERSAO_APP = config('VERSAO_APP', default='v1.3')
+VERSAO_APP = config('VERSAO_APP', default='v1.4')

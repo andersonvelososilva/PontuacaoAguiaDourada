@@ -45,32 +45,39 @@
     <!-- Atalhos Rápidos para Operações do Dia a Dia -->
     <h2 class="h5 fw-bold text-dark mb-3"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Ações Rápidas</h2>
     <div class="row g-3">
-        <div class="col-12 col-sm-6 col-md-3">
-            <a href="{% url 'pontuacao:diretoria_desbravadores' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-primary">
-                <div class="fs-1 text-primary mb-2"><i class="bi bi-person-lines-fill"></i></div>
-                <h3 class="h6 fw-bold text-dark mb-1">Desbravadores</h3>
-                <small class="text-muted">Consultar e editar cadastro</small>
-            </a>
-        </div>
-        <div class="col-12 col-sm-6 col-md-3">
-            <a href="{% url 'pontuacao:diretoria_pontuacao' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-success">
+        <div class="col-12 col-sm-6 col-md-4">
+            <a href="{% url 'pontuacao:diretoria_pontuacao' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-success shadow-sm">
                 <div class="fs-1 text-success mb-2"><i class="bi bi-plus-slash-minus"></i></div>
                 <h3 class="h6 fw-bold text-dark mb-1">Lançar Pontuação</h3>
                 <small class="text-muted">Adicionar ou remover pontos (+/-)</small>
             </a>
         </div>
-        <div class="col-12 col-sm-6 col-md-3">
-            <a href="{% url 'pontuacao:diretoria_ranking' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-warning">
-                <div class="fs-1 text-warning mb-2"><i class="bi bi-trophy-fill"></i></div>
-                <h3 class="h6 fw-bold text-dark mb-1">Ranking Completo</h3>
-                <small class="text-muted">Ver classificação administrativa</small>
+        <div class="col-12 col-sm-6 col-md-4">
+            <a href="{% url 'pontuacao:diretoria_historico' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-danger shadow-sm">
+                <div class="fs-1 text-danger mb-2"><i class="bi bi-clock-history"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Histórico Geral</h3>
+                <small class="text-muted">Consultar registro auditável por diretor</small>
             </a>
         </div>
-        <div class="col-12 col-sm-6 col-md-3">
-            <a href="{% url 'pontuacao:diretoria_configuracoes' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-info">
+        <div class="col-12 col-sm-6 col-md-4">
+            <a href="{% url 'pontuacao:diretoria_desbravadores' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-primary shadow-sm">
+                <div class="fs-1 text-primary mb-2"><i class="bi bi-person-lines-fill"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Desbravadores</h3>
+                <small class="text-muted">Consultar e editar cadastro</small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6">
+            <a href="{% url 'pontuacao:diretoria_ranking' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-warning shadow-sm">
+                <div class="fs-1 text-warning mb-2"><i class="bi bi-trophy-fill"></i></div>
+                <h3 class="h6 fw-bold text-dark mb-1">Ranking Completo</h3>
+                <small class="text-muted">Ver classificação administrativa de todos</small>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-md-6">
+            <a href="{% url 'pontuacao:diretoria_configuracoes' %}" class="card card-custom p-4 text-center text-decoration-none h-100 border-start border-4 border-info shadow-sm">
                 <div class="fs-1 text-info mb-2"><i class="bi bi-sliders"></i></div>
                 <h3 class="h6 fw-bold text-dark mb-1">Configurações</h3>
-                <small class="text-muted">Regras de exibição pública</small>
+                <small class="text-muted">Regras de exibição do ranking público</small>
             </a>
         </div>
     </div>

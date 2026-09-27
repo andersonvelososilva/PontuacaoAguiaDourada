@@ -369,3 +369,39 @@ class DiretoriaConfiguracoesView(DiretoriaRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Configurações de visibilidade do ranking atualizadas com sucesso!")
         return super().form_valid(form)
+
+
+class DiretoriaHistoricoGeralView(DiretoriaRequiredMixin, ListView):
+    """
+    Exibe o histórico geral de todos os lançamentos e remoções de pontuações,
+    identificando qual membro da diretoria efetuou a alteração.
+    """
+    model = Pontuacao
+    template_name = 'diretoria/historico.html'
+    context_object_name = 'historico'
+    paginate_by = 50
+
+    def get_queryset(self):
+        qs = Pontuacao.objects.select_related('desbravador', 'desbravador__unidade', 'criado_por')
+
+        query = self.request.GET.get('q', '').strip()
+        if query:
+            qs = qs.filter(
+                Q(desbravador__nome__icontains=query) |
+                Q(motivo__icontains=query) |
+                Q(criado_por__username__icontains=query) |
+                Q(criado_por__first_name__icontains=query)
+            )
+
+        unidade_id = self.request.GET.get('unidade')
+        if unidade_id and unidade_id.isdigit():
+            qs = qs.filter(desbravador__unidade_id=int(unidade_id))
+
+        return qs.order_by('-data_hora', '-created_at')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['unidades'] = Unidade.objects.all()
+        context['query_q'] = self.request.GET.get('q', '')
+        context['unidade_sel'] = self.request.GET.get('unidade', '')
+        return context
