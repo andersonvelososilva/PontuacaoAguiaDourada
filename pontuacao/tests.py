@@ -197,3 +197,22 @@ class PontuacaoCompletaTest(TestCase):
         self.assertEqual(response_public.status_code, 200)
         self.assertIsNone(response_public.context['ranking_list'])
         self.assertContains(response_public, "Ranking Indisponível no Momento")
+
+    def test_lancamento_em_massa_por_unidade_e_checkboxes(self):
+        client = Client()
+        client.login(username='diretor', password='diretorpassword123')
+
+        # Lançamento em massa para toda a unidade Águias
+        response = client.post(reverse('pontuacao:diretoria_pontuacao'), {
+            'modo': 'MASSA',
+            'unidade_id': str(self.unidade_a.id),
+            'tipo': 'ADICIONAR',
+            'quantidade': 15,
+            'motivo': 'Presença na Reunião',
+        })
+        self.assertEqual(response.status_code, 302)
+
+        # João Silva (unidade Águias) tinha 50 e deve ter ficado com 65 pontos (50 + 15)
+        self.assertEqual(self.desbravador_joao.total_pontos, 65)
+        # Beatriz (unidade Falcões) não foi afetada e continua com seus 100 pontos iniciais
+        self.assertEqual(self.desbravador_beatriz.total_pontos, 100)

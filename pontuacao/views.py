@@ -245,32 +245,99 @@ class DiretoriaDesbravadorUpdateView(DiretoriaRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class DiretoriaLancarPontuacaoView(DiretoriaRequiredMixin, FormView):
+class DiretoriaLancarPontuacaoView(DiretoriaRequiredMixin, TemplateView):
     """
-    Formulário para lançar adição (+) ou remoção (-) de pontos com motivo obrigatório.
+    Formulário para lançar adição (+) ou remoção (-) de pontos individualmente ou em massa (por grupo/unidade).
     """
     template_name = 'diretoria/pontuacao_form.html'
-    form_class = FormLancarPontuacao
-    success_url = '/diretoria/pontuacao/'
 
-    def form_valid(self, form):
-        desbravador = form.cleaned_data['desbravador']
-        tipo = form.cleaned_data['tipo']
-        qtd = form.cleaned_data['quantidade']
-        motivo = form.cleaned_data['motivo']
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['desbravadores'] = Desbravador.objects.filter(ativo=True).select_related('unidade').order_by('unidade__nome', 'nome')
+        context['unidades'] = Unidade.objects.filter(ativo=True).order_by('nome')
+        context['form_individual'] = FormLancarPontuacao()
+        return context
 
-        pontos_finais = -abs(qtd) if tipo == 'REMOVER' else abs(qtd)
+    def post(self, request, *args, **kwargs):
+        modo = request.POST.get('modo', 'INDIVIDUAL')
 
-        Pontuacao.objects.create(
-            desbravador=desbravador,
-            pontos=pontos_finais,
-            motivo=motivo,
-            criado_por=self.request.user
-        )
+        if modo == 'MASSA':
+            desbravadores_ids = request.POST.getlist('desbravadores_ids')
+            unidade_id = request.POST.get('unidade_id', '')
+            tipo = request.POST.get('tipo', 'ADICIONAR')
+            try:
+                qtd = int(request.POST.get('quantidade', 0))
+            except (ValueError, TypeError):
+                qtd = 0
 
-        sinal_txt = f"{pontos_finais}" if pontos_finais < 0 else f"+{pontos_finais}"
-        messages.success(self.request, f"Lançamento efetuado: {sinal_txt} pontos para {desbravador.nome} ({motivo}).")
-        return super().form_valid(form)
+            motivo = request.POST.get('motivo', '').strip()
+
+            if not motivo:
+                messages.error(request, "O campo Motivo / Justificativa é obrigatório.")
+                return self.get(request, *args, **kwargs)
+
+            if qtd <= 0:
+                messages.error(request, "A quantidade de pontos deve ser um número positivo maior que zero.")
+                return self.get(request, *args, **kwargs)
+
+            # Determina os desbravadores alvo
+            if unidade_id == 'TODAS':
+                desbravadores = list(Desbravador.objects.filter(ativo=True))
+            elif unidade_id and unidade_id.isdigit():
+                desbravadores = list(Desbravador.objects.filter(unidade_id=int(unidade_id), ativo=True))
+            elif desbravadores_ids:
+                desbravadores = list(Desbravador.objects.filter(id__in=desbravadores_ids, ativo=True))
+            else:
+                desbravadores = []
+
+            if not desbravadores:
+                messages.error(request, "Nenhum desbravador foi selecionado para o lançamento em massa.")
+                return self.get(request, *args, **kwargs)
+
+            pontos_finais = -abs(qtd) if tipo == 'REMOVER' else abs(qtd)
+            
+            pontuacoes_objs = [
+                Pontuacao(
+                    desbravador=d,
+                    pontos=pontos_finais,
+                    motivo=motivo,
+                    criado_por=request.user
+                )
+                for d in desbravadores
+            ]
+            Pontuacao.objects.bulk_create(pontuacoes_objs)
+
+            sinal_txt = f"{pontos_finais}" if pontos_finais < 0 else f"+{pontos_finais}"
+            messages.success(
+                request,
+                f"Lançamento em massa efetuado com sucesso! {sinal_txt} pontos lançados para {len(desbravadores)} desbravador(es) ('{motivo}')."
+            )
+            return redirect('pontuacao:diretoria_pontuacao')
+
+        else:
+            form = FormLancarPontuacao(request.POST)
+            if form.is_valid():
+                desbravador = form.cleaned_data['desbravador']
+                tipo = form.cleaned_data['tipo']
+                qtd = form.cleaned_data['quantidade']
+                motivo = form.cleaned_data['motivo']
+
+                pontos_finais = -abs(qtd) if tipo == 'REMOVER' else abs(qtd)
+
+                Pontuacao.objects.create(
+                    desbravador=desbravador,
+                    pontos=pontos_finais,
+                    motivo=motivo,
+                    criado_por=request.user
+                )
+
+                sinal_txt = f"{pontos_finais}" if pontos_finais < 0 else f"+{pontos_finais}"
+                messages.success(request, f"Lançamento efetuado: {sinal_txt} pontos para {desbravador.nome} ('{motivo}').")
+                return redirect('pontuacao:diretoria_pontuacao')
+            else:
+                context = self.get_context_data(**kwargs)
+                context['form_individual'] = form
+                return self.render_to_response(context)
 
 
 class DiretoriaRankingView(DiretoriaRequiredMixin, ListView):

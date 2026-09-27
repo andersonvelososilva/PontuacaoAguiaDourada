@@ -1,73 +1,234 @@
 {% extends 'pontuacao/base_diretoria.html' %}
+{% load static %}
 
 {% block title %}Lançar Pontuação — Diretoria{% endblock %}
 
 {% block content %}
-<div class="container py-4 px-3" style="max-width: 600px;">
-    <div class="card card-custom p-4 shadow-sm">
+<div class="container py-4 px-3" style="max-width: 720px;">
+    <div class="card card-custom p-4 shadow-sm border-0">
         <div class="text-center mb-4">
             <span class="fs-1 text-primary"><i class="bi bi-plus-slash-minus"></i></span>
             <h1 class="h4 fw-bold text-dark mb-1">Lançar Pontuação</h1>
-            <p class="text-muted small">Adicione pontos por tarefas cumpridas ou registre punições/remoções com justificativa.</p>
+            <p class="text-muted small">Adicione ou remova pontos individualmente ou para grupos/unidades inteiras.</p>
         </div>
 
-        <form method="POST" id="form-pontuacao" onsubmit="return confirmarLancamento();">
-            {% csrf_token %}
+        <!-- Abas de Navegação: Individual vs Em Massa -->
+        <ul class="nav nav-pills nav-justified mb-4 p-1 bg-light rounded-3 border" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold py-2" id="pills-individual-tab" data-bs-toggle="pill" data-bs-target="#pills-individual" type="button" role="tab">
+                    <i class="bi bi-person-fill me-1"></i> Individual
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold py-2" id="pills-massa-tab" data-bs-toggle="pill" data-bs-target="#pills-massa" type="button" role="tab">
+                    <i class="bi bi-people-fill me-1"></i> Em Massa / Grupo
+                </button>
+            </li>
+        </ul>
 
-            <div class="mb-3">
-                <label for="id_desbravador" class="form-label fw-bold text-secondary">Desbravador</label>
-                {{ form.desbravador }}
-            </div>
+        <div class="tab-content" id="pills-tabContent">
 
-            <div class="mb-3 p-3 bg-light rounded-3 border">
-                <label class="form-label fw-bold text-secondary mb-2">Tipo de Lançamento</label>
-                <div class="d-flex gap-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tipo" id="tipo_add" value="ADICIONAR" checked>
-                        <label class="form-check-label fw-bold text-success" for="tipo_add">
-                            <i class="bi bi-plus-circle-fill me-1"></i> Adicionar Pontos (+)
-                        </label>
+            <!-- ABA 1: LANÇAMENTO INDIVIDUAL -->
+            <div class="tab-pane fade show active" id="pills-individual" role="tabpanel">
+                <form method="POST" id="form-individual" onsubmit="return confirmarLancamentoIndividual();">
+                    {% csrf_token %}
+                    <input type="hidden" name="modo" value="INDIVIDUAL">
+
+                    <div class="mb-3">
+                        <label for="id_desbravador" class="form-label fw-bold text-secondary">Desbravador</label>
+                        {{ form_individual.desbravador }}
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tipo" id="tipo_rem" value="REMOVER">
-                        <label class="form-check-label fw-bold text-danger" for="tipo_rem">
-                            <i class="bi bi-dash-circle-fill me-1"></i> Remover Pontos (-)
-                        </label>
+
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label fw-bold text-secondary mb-2">Tipo de Lançamento</label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="tipo_add_ind" value="ADICIONAR" checked>
+                                <label class="form-check-label fw-bold text-success" for="tipo_add_ind">
+                                    <i class="bi bi-plus-circle-fill me-1"></i> Adicionar Pontos (+)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="tipo_rem_ind" value="REMOVER">
+                                <label class="form-check-label fw-bold text-danger" for="tipo_rem_ind">
+                                    <i class="bi bi-dash-circle-fill me-1"></i> Remover Pontos (-)
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="mb-3">
+                        <label for="id_quantidade_ind" class="form-label fw-bold text-secondary">Quantidade de Pontos (Valor Positivo)</label>
+                        <input type="number" name="quantidade" id="id_quantidade_ind" class="form-control form-control-lg" placeholder="Ex: 10" min="1" required>
+                        <small class="text-muted">Se for uma remoção/punição, o sistema aplicará o sinal negativo automaticamente.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_motivo_ind" class="form-label fw-bold text-secondary">Motivo / Justificativa (Obrigatório)</label>
+                        <input type="text" name="motivo" id="id_motivo_ind" class="form-control" placeholder="Ex: Presença na reunião / Atraso na formação" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-diretoria-primary w-100 py-2 fs-6 shadow-sm">
+                        <i class="bi bi-check-circle-fill me-1"></i> Confirmar Lançamento Individual
+                    </button>
+                </form>
             </div>
 
-            <div class="mb-3">
-                <label for="id_quantidade" class="form-label fw-bold text-secondary">Quantidade de Pontos (Valor Positivo)</label>
-                <input type="number" name="quantidade" id="id_quantidade" class="form-control form-control-lg" placeholder="Ex: 10" min="1" required>
-                <small class="text-muted">Se for uma remoção/punição, o sistema aplicará o sinal negativo automaticamente.</small>
+            <!-- ABA 2: LANÇAMENTO EM MASSA (GRUPO / UNIDADE) -->
+            <div class="tab-pane fade" id="pills-massa" role="tabpanel">
+                <form method="POST" id="form-massa" onsubmit="return confirmarLancamentoMassa();">
+                    {% csrf_token %}
+                    <input type="hidden" name="modo" value="MASSA">
+
+                    <!-- Atalho: Selecionar Por Unidade Inteira -->
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label for="id_unidade_massa" class="form-label fw-bold text-dark mb-1">
+                            <i class="bi bi-shield-check me-1 text-warning"></i> Lançar para toda uma Unidade (Opcional)
+                        </label>
+                        <select name="unidade_id" id="id_unidade_massa" class="form-select" onchange="aoSelecionarUnidadeDropdown(this.value)">
+                            <option value="">-- Selecionar desbravadores manualmente abaixo --</option>
+                            <option value="TODAS">🌟 TODOS os Desbravadores do Clube</option>
+                            {% for u in unidades %}
+                                <option value="{{ u.id }}">Unidade {{ u.nome }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Ao escolher uma unidade aqui, a pontuação será aplicada a todos os desbravadores ativos dela.</small>
+                    </div>
+
+                    <!-- Seleção Manual por Checkboxes com Atalhos -->
+                    <div class="mb-3" id="secao-checkboxes">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-bold text-secondary mb-0">Ou selecione desbravadores específicos:</label>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="selecionarTudo(true)">Marcar Todos</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="selecionarTudo(false)">Desmarcar Todos</button>
+                            </div>
+                        </div>
+
+                        <!-- Botões de filtro por unidade -->
+                        <div class="d-flex flex-wrap gap-1 mb-2">
+                            {% for u in unidades %}
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill py-0 px-2" onclick="marcarUnidade({{ u.id }})">
+                                    + {{ u.nome }}
+                                </button>
+                            {% endfor %}
+                        </div>
+
+                        <div class="border rounded-3 p-3 bg-white" style="max-height: 240px; overflow-y: auto;">
+                            {% for d in desbravadores %}
+                                <div class="form-check py-1 border-bottom border-light">
+                                    <input class="form-check-input chk-desbravador" type="checkbox" name="desbravadores_ids" value="{{ d.id }}" id="chk_d_{{ d.id }}" data-unidade-id="{{ d.unidade.id }}">
+                                    <label class="form-check-label d-flex justify-content-between align-items-center" for="chk_d_{{ d.id }}">
+                                        <span class="fw-semibold text-dark">{{ d.nome }}</span>
+                                        <span class="badge bg-secondary-subtle text-secondary border rounded-pill small">{{ d.unidade.nome }}</span>
+                                    </label>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted small text-center my-2">Nenhum desbravador ativo cadastrado.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Tipo de Lançamento -->
+                    <div class="mb-3 p-3 bg-light rounded-3 border">
+                        <label class="form-label fw-bold text-secondary mb-2">Tipo de Lançamento</label>
+                        <div class="d-flex gap-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="tipo_add_massa" value="ADICIONAR" checked>
+                                <label class="form-check-label fw-bold text-success" for="tipo_add_massa">
+                                    <i class="bi bi-plus-circle-fill me-1"></i> Adicionar Pontos (+)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="tipo_rem_massa" value="REMOVER">
+                                <label class="form-check-label fw-bold text-danger" for="tipo_rem_massa">
+                                    <i class="bi bi-dash-circle-fill me-1"></i> Remover Pontos (-)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_quantidade_massa" class="form-label fw-bold text-secondary">Quantidade de Pontos (Valor Positivo)</label>
+                        <input type="number" name="quantidade" id="id_quantidade_massa" class="form-control form-control-lg" placeholder="Ex: 10" min="1" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_motivo_massa" class="form-label fw-bold text-secondary">Motivo / Justificativa em Massa (Obrigatório)</label>
+                        <input type="text" name="motivo" id="id_motivo_massa" class="form-control" placeholder="Ex: Presença na reunião de domingo" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning text-dark fw-bold w-100 py-2 fs-6 shadow-sm">
+                        <i class="bi bi-people-fill me-1"></i> Confirmar Lançamento em Massa
+                    </button>
+                </form>
             </div>
 
-            <div class="mb-4">
-                <label for="id_motivo" class="form-label fw-bold text-secondary">Motivo / Justificativa (Obrigatório)</label>
-                <input type="text" name="motivo" id="id_motivo" class="form-control" placeholder="Ex: Presença na reunião / Atraso na formação" required>
-            </div>
-
-            <button type="submit" class="btn btn-diretoria-primary w-100 py-2 fs-6 shadow-sm">
-                <i class="bi bi-check-circle-fill me-1"></i> Confirmar e Salvar Lançamento
-            </button>
-        </form>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    function confirmarLancamento() {
-        const tipoRem = document.getElementById('tipo_rem');
-        const qtd = document.getElementById('id_quantidade').value;
+    function confirmarLancamentoIndividual() {
+        const tipoRem = document.getElementById('tipo_rem_ind');
+        const qtd = document.getElementById('id_quantidade_ind').value;
         const desbravadorSelect = document.getElementById('id_desbravador');
-        const nomeDesbravador = desbravadorSelect.options[desbravadorSelect.selectedIndex].text;
+        const nome = desbravadorSelect.options[desbravadorSelect.selectedIndex].text;
 
         if (tipoRem && tipoRem.checked) {
-            return confirm(`Atenção: Confirmar a REMOÇÃO de ${qtd} pontos do desbravador ${nomeDesbravador}?`);
+            return confirm(`Atenção: Confirmar a REMOÇÃO de ${qtd} pontos do desbravador ${nome}?`);
         }
         return true;
+    }
+
+    function selecionarTudo(status) {
+        document.querySelectorAll('.chk-desbravador').forEach(chk => {
+            chk.checked = status;
+        });
+        document.getElementById('id_unidade_massa').value = '';
+    }
+
+    function marcarUnidade(unidadeId) {
+        document.querySelectorAll('.chk-desbravador').forEach(chk => {
+            if (chk.getAttribute('data-unidade-id') == unidadeId) {
+                chk.checked = true;
+            }
+        });
+        document.getElementById('id_unidade_massa').value = '';
+    }
+
+    function aoSelecionarUnidadeDropdown(val) {
+        if (val) {
+            document.querySelectorAll('.chk-desbravador').forEach(chk => {
+                chk.checked = false;
+            });
+        }
+    }
+
+    function confirmarLancamentoMassa() {
+        const unidadeSelect = document.getElementById('id_unidade_massa');
+        const chks = document.querySelectorAll('.chk-desbravador:checked');
+        const qtd = document.getElementById('id_quantidade_massa').value;
+        const tipoRem = document.getElementById('tipo_rem_massa');
+        const acaoTxt = (tipoRem && tipoRem.checked) ? 'REMOVER' : 'ADICIONAR';
+
+        if (!unidadeSelect.value && chks.length === 0) {
+            alert('Por favor, selecione ao menos uma unidade no menu ou marque pelo menos um desbravador na lista.');
+            return false;
+        }
+
+        let alvoTxt = '';
+        if (unidadeSelect.value === 'TODAS') {
+            alvoTxt = 'TODOS os desbravadores do clube';
+        } else if (unidadeSelect.value) {
+            alvoTxt = `todos os integrantes da ${unidadeSelect.options[unidadeSelect.selectedIndex].text}`;
+        } else {
+            alvoTxt = `${chks.length} desbravador(es) selecionado(s)`;
+        }
+
+        return confirm(`Confirmar ${acaoTxt} ${qtd} pontos para ${alvoTxt}?`);
     }
 </script>
 {% endblock %}

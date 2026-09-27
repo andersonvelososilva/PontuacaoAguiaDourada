@@ -173,8 +173,33 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Indicador de Carregamento nos Formulários
+        // Indicador de Carregamento nos Cliques de Navegação e Menu
         document.addEventListener('DOMContentLoaded', function () {
+            const clickables = document.querySelectorAll('a.btn, a.nav-link, a.nav-link-custom, .navbar-brand, a.list-group-item');
+            clickables.forEach(function (el) {
+                el.addEventListener('click', function (e) {
+                    const href = el.getAttribute('href');
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:') || el.getAttribute('target') === '_blank') {
+                        return;
+                    }
+                    if (el.classList.contains('is-navigating')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    el.classList.add('is-navigating', 'pe-none');
+                    el.style.opacity = '0.75';
+
+                    const icon = el.querySelector('i.bi');
+                    if (icon) {
+                        icon.className = 'spinner-border spinner-border-sm me-1';
+                        icon.setAttribute('role', 'status');
+                    } else {
+                        el.insertAdjacentHTML('afterbegin', '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>');
+                    }
+                });
+            });
+
+            // Indicador de Carregamento nos Formulários
             const forms = document.querySelectorAll('form');
             forms.forEach(function (form) {
                 form.addEventListener('submit', function (e) {
@@ -196,6 +221,13 @@
                         }
                     }, 0);
                 });
+            });
+        });
+
+        window.addEventListener('pageshow', function (event) {
+            document.querySelectorAll('.is-navigating').forEach(function (el) {
+                el.classList.remove('is-navigating', 'pe-none');
+                el.style.opacity = '';
             });
         });
     </script>

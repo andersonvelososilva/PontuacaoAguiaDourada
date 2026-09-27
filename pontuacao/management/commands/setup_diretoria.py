@@ -1,8 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from pontuacao.models import Unidade, Desbravador
 
 class Command(BaseCommand):
-    help = "Cria/atualiza as contas da Diretoria (Fernanda Mazur, Jancira Dantas e Admin) e senhas dos Desbravadores"
+    help = "Cria/atualiza as contas da Diretoria, senhas dos Desbravadores e a Unidade Aspirantes"
 
     def handle(self, *args, **options):
         # 1. Admin
@@ -33,8 +34,12 @@ class Command(BaseCommand):
         j_user.save()
         self.stdout.write(self.style.SUCCESS("Conta 'Jancira Dantas' (usuario: janciradantas) criada/atualizada com sucesso."))
 
-        # 4. Garantir que os dados dos desbravadores estao carregados se o banco estiver novo/vazio
-        from pontuacao.models import Desbravador
+        # 4. Garantir que a unidade 'Aspirantes' existe no banco
+        unidade_asp, created_asp = Unidade.objects.get_or_create(nome='Aspirantes', defaults={'ativo': True})
+        if created_asp:
+            self.stdout.write(self.style.SUCCESS("Unidade 'Aspirantes' criada com sucesso."))
+
+        # 5. Garantir que os dados dos desbravadores estao carregados se o banco estiver novo/vazio
         from django.core.management import call_command
         if Desbravador.objects.count() == 0:
             try:
@@ -43,7 +48,7 @@ class Command(BaseCommand):
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"Erro ao carregar initial_data.json: {e}"))
 
-        # 5. Atualizar senhas dos desbravadores no padrão: animal + 3 dígitos únicos
+        # 6. Atualizar senhas dos desbravadores no padrão: animal + 3 dígitos únicos
         senhas_desbravadores = {
             'anasofia': 'aguia248',
             'arthur': 'leao715',
