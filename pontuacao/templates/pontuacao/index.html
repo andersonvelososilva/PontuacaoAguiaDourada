@@ -52,7 +52,7 @@
                     Acompanhe o desempenho, pontuação e conquistas dos nossos desbravadores.
                 </p>
 
-                <!-- Opções para Ver Ranking e Entrar no Sistema -->
+                <!-- Opções para Ver Ranking, Entrar no Sistema e Instalar Aplicativo -->
                 <div class="d-grid gap-3 col-12 mx-auto">
                     <a href="{% url 'pontuacao:public_ranking' %}" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm py-3">
                         <i class="bi bi-trophy-fill me-2 text-warning"></i> Ver Ranking
@@ -60,6 +60,9 @@
                     <a href="{% url 'pontuacao:login' %}" class="btn btn-warning btn-lg rounded-pill fw-bold text-dark shadow-sm py-3">
                         <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
                     </a>
+                    <button type="button" onclick="acionarInstalacaoPWA()" class="btn btn-outline-success btn-lg rounded-pill fw-bold shadow-sm py-3 d-none btn-install-pwa">
+                        <i class="bi bi-phone-fill me-2"></i> Instalar Aplicativo no Celular
+                    </button>
                 </div>
             </div>
         </div>

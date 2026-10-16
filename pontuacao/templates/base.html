@@ -7,11 +7,12 @@
     <meta name="theme-color" content="#1b2a4a">
     <meta name="description" content="Sistema de Pontuação dos Desbravadores — {{ NOME_DO_CLUBE }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Águia Dourada">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="{% url 'manifest' %}">
-    <link rel="icon" type="image/x-icon" href="{% static 'icons/favicon.ico' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/favicon.png' %}">
-    <link rel="apple-touch-icon" href="{% static 'icons/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ ICON_192_URL }}">
+    <link rel="apple-touch-icon" href="{{ APPLE_ICON_URL }}">
     
     <title>{% block title %}Sistema de Pontos - {{ NOME_DO_CLUBE }}{% endblock %}</title>
 
@@ -169,7 +170,10 @@
                 <img src="{{ LOGO_URL }}" onerror="this.onerror=null; this.src='{% static 'images/logo.png' %}';" alt="Logo {{ NOME_DO_CLUBE }}" style="height: 36px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" class="me-1">
                 <span>Clube Águia Dourada</span>
             </a>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <button type="button" class="btn btn-success btn-sm rounded-pill px-3 fw-bold d-none btn-install-pwa shadow-sm" onclick="acionarInstalacaoPWA()">
+                    <i class="bi bi-download me-1"></i> Instalar App
+                </button>
                 <a href="{% url 'pontuacao:public_ranking' %}" class="btn btn-outline-light btn-sm rounded-pill px-3 fw-bold">
                     <i class="bi bi-trophy-fill me-1 text-warning"></i> Ranking
                 </a>
@@ -202,6 +206,47 @@
         {% block content %}{% endblock %}
     </main>
 
+    <!-- Modal de Instrução de Instalação do App (Fallback para iOS / Navegador Interno WhatsApp) -->
+    <div class="modal fade" id="modalInstallPWA" tabindex="-1" aria-labelledby="modalInstallPWALabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark" id="modalInstallPWALabel">
+                        <i class="bi bi-phone-fill text-primary me-2"></i>Instalar Aplicativo no Celular
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body pt-2">
+                    <div id="pwa-aviso-webview" class="alert alert-warning rounded-3 small d-none mb-3">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                        <strong>Atenção:</strong> Você abriu o link por dentro do WhatsApp/Instagram. Toque nos <strong>3 pontinhos (⋮)</strong> no canto superior e escolha <strong>"Abrir no navegador / Chrome / Safari"</strong> para instalar o aplicativo.
+                    </div>
+
+                    <div id="pwa-instrucoes-android">
+                        <p class="text-muted small mb-2">Para instalar o aplicativo oficial na sua tela inicial:</p>
+                        <ol class="small mb-0 ps-3">
+                            <li class="mb-2">Toque no ícone de <strong>menu do navegador (⋮)</strong> no canto superior direito do Chrome.</li>
+                            <li class="mb-2">Selecione a opção <strong>"Instalar aplicativo"</strong> (ou <em>"Adicionar à tela inicial"</em>).</li>
+                            <li>Confirme tocando em <strong>Instalar</strong>. O app aparecerá junto aos seus aplicativos!</li>
+                        </ol>
+                    </div>
+
+                    <div id="pwa-instrucoes-ios" class="d-none">
+                        <p class="text-muted small mb-2">No iPhone / iPad (Safari), siga estes 2 passos simples:</p>
+                        <ol class="small mb-0 ps-3">
+                            <li class="mb-2">Toque no botão <strong>Compartilhar</strong> <i class="bi bi-box-arrow-up text-primary fs-6"></i> na barra inferior do Safari.</li>
+                            <li class="mb-2">Role a lista para baixo e toque em <strong>"Adicionar à Tela de Início"</strong> <i class="bi bi-plus-square text-dark"></i>.</li>
+                            <li>Toque em <strong>Adicionar</strong> no canto superior direito.</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-primary rounded-pill px-4 fw-bold w-100" data-bs-dismiss="modal">Entendi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="text-center py-3 border-top bg-white">
         <div class="container">
@@ -216,17 +261,83 @@
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Service Worker PWA Registration -->
+    <!-- Service Worker PWA Registration & Install Prompt -->
     <script>
+        let deferredInstallPrompt = null;
+
+        function isAppStandalone() {
+            return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        }
+
+        function atualizarBotoesInstalacao() {
+            const botoes = document.querySelectorAll('.btn-install-pwa');
+            if (isAppStandalone()) {
+                botoes.forEach(btn => btn.classList.add('d-none'));
+            } else {
+                botoes.forEach(btn => btn.classList.remove('d-none'));
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            atualizarBotoesInstalacao();
+        });
+
+        window.addEventListener('appinstalled', function() {
+            deferredInstallPrompt = null;
+            document.querySelectorAll('.btn-install-pwa').forEach(btn => btn.classList.add('d-none'));
+        });
+
+        function acionarInstalacaoPWA() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        document.querySelectorAll('.btn-install-pwa').forEach(btn => btn.classList.add('d-none'));
+                    }
+                    deferredInstallPrompt = null;
+                });
+            } else {
+                const ua = navigator.userAgent || navigator.vendor || window.opera;
+                const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+                const isWebView = /FBAN|FBAV|Instagram|WhatsApp|Line|wv/i.test(ua);
+
+                const elIos = document.getElementById('pwa-instrucoes-ios');
+                const elAndroid = document.getElementById('pwa-instrucoes-android');
+                const elWebview = document.getElementById('pwa-aviso-webview');
+
+                if (isWebView && elWebview) {
+                    elWebview.classList.remove('d-none');
+                }
+                if (isIOS) {
+                    elIos.classList.remove('d-none');
+                    elAndroid.classList.add('d-none');
+                } else {
+                    elIos.classList.add('d-none');
+                    elAndroid.classList.remove('d-none');
+                }
+
+                const modalEl = document.getElementById('modalInstallPWA');
+                if (modalEl && window.bootstrap) {
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                }
+            }
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/static/js/sw.js').then(function(registration) {
-                    console.log('ServiceWorker registrado:', registration.scope);
+                atualizarBotoesInstalacao();
+                navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(function(registration) {
+                    console.log('ServiceWorker registrado na raiz:', registration.scope);
                     registration.update();
                 }).catch(function(err) {
                     console.log('Erro no ServiceWorker:', err);
                 });
             });
+        } else {
+            window.addEventListener('load', atualizarBotoesInstalacao);
         }
 
         // Indicador de Carregamento nos Cliques de Navegação, Menus e Cartões de Atalho

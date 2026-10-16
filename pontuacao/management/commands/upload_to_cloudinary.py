@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.conf import settings
 
 class Command(BaseCommand):
-    help = "Uploads all local media photos of desbravadores and logo directly to Cloudinary"
+    help = "Uploads all local media photos of desbravadores, logo and PWA icons directly to Cloudinary"
 
     def handle(self, *args, **options):
         cloud_name = getattr(settings, 'CLOUDINARY_STORAGE', {}).get('CLOUD_NAME')
@@ -20,21 +20,28 @@ class Command(BaseCommand):
             api_secret=settings.CLOUDINARY_STORAGE['API_SECRET']
         )
 
-        # 1. Upload static logo.png to Cloudinary
-        logo_path = os.path.join(settings.BASE_DIR, 'pontuacao', 'static', 'images', 'logo.png')
-        if os.path.exists(logo_path):
-            try:
-                res = cloudinary.uploader.upload(
-                    logo_path,
-                    public_id="logo_aguia_dourada",
-                    folder="static",
-                    use_filename=False,
-                    unique_filename=False,
-                    overwrite=True
-                )
-                self.stdout.write(self.style.SUCCESS(f"Logo enviado para Cloudinary: {res.get('secure_url')}"))
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f"Erro ao enviar logo para Cloudinary: {e}"))
+        # 1. Upload static logo.png and PWA icons to Cloudinary
+        static_uploads = [
+            (os.path.join(settings.BASE_DIR, 'pontuacao', 'static', 'images', 'logo.png'), 'logo_aguia_dourada'),
+            (os.path.join(settings.BASE_DIR, 'pontuacao', 'static', 'icons', 'icon-192.png'), 'icon_192'),
+            (os.path.join(settings.BASE_DIR, 'pontuacao', 'static', 'icons', 'icon-512.png'), 'icon_512'),
+            (os.path.join(settings.BASE_DIR, 'pontuacao', 'static', 'icons', 'apple-touch-icon.png'), 'apple_touch_icon'),
+        ]
+
+        for local_path, public_id in static_uploads:
+            if os.path.exists(local_path):
+                try:
+                    res = cloudinary.uploader.upload(
+                        local_path,
+                        public_id=public_id,
+                        folder="static",
+                        use_filename=False,
+                        unique_filename=False,
+                        overwrite=True
+                    )
+                    self.stdout.write(self.style.SUCCESS(f"Asset {public_id} enviado para Cloudinary: {res.get('secure_url')}"))
+                except Exception as e:
+                    self.stdout.write(self.style.ERROR(f"Erro ao enviar {public_id} para Cloudinary: {e}"))
 
         # 2. Upload desbravadores photos
         media_dir = os.path.join(settings.BASE_DIR, 'media', 'desbravadores')
