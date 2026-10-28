@@ -65,9 +65,22 @@ class PublicRankingView(TemplateView):
 class CustomLoginView(LoginView):
     """
     Login unificado. Redireciona Diretoria para /diretoria/ e Desbravador para /perfil/.
+    Aceita login sem diferenciar maiúsculas/minúsculas (ex: Nubya ou nubya).
     """
     template_name = 'pontuacao/login.html'
     redirect_authenticated_user = True
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if 'data' in kwargs and kwargs['data']:
+            data = kwargs['data'].copy()
+            raw_username = data.get('username', '').strip()
+            if raw_username:
+                matched_user = User.objects.filter(username__iexact=raw_username).first()
+                if matched_user:
+                    data['username'] = matched_user.username
+            kwargs['data'] = data
+        return kwargs
 
     def get_success_url(self):
         user = self.request.user

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'desbravadores-pontuacao-v1.5';
+const CACHE_NAME = 'desbravadores-pontuacao-v1.6';
 const urlsToCache = [
   '/',
   '/ranking/',

@@ -19,7 +19,7 @@ def clube_settings(request):
     return {
         'NOME_DO_CLUBE': getattr(settings, 'NOME_DO_CLUBE', 'Clube de Desbravadores Águia Dourada'),
         'EXIBIR_HISTORICO_PUBLICO': getattr(settings, 'EXIBIR_HISTORICO_PUBLICO', True),
-        'VERSAO_APP': getattr(settings, 'VERSAO_APP', 'v1.5'),
+        'VERSAO_APP': getattr(settings, 'VERSAO_APP', 'v1.6'),
         'LOGO_URL': logo_url,
         'ICON_192_URL': icon_192_url,
         'ICON_512_URL': icon_512_url,

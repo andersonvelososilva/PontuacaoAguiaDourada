@@ -48,7 +48,39 @@ class Command(BaseCommand):
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"Erro ao carregar initial_data.json: {e}"))
 
-        # 6. Atualizar senhas dos desbravadores no padrão: animal + 3 dígitos únicos
+        # 6. Criar/atualizar novos desbravadores (Nubya e Ramon)
+        unidade_arara = Unidade.objects.filter(nome__iexact='Arara Azul').first() or unidade_asp
+        unidade_harpia = Unidade.objects.filter(nome__iexact='Harpia').first() or unidade_asp
+
+        novos_desbravadores = [
+            {'nome': 'Nubya', 'username': 'Nubya', 'senha': 'arara123', 'unidade_padrao': unidade_arara},
+            {'nome': 'Ramon', 'username': 'Ramon', 'senha': 'papagaio456', 'unidade_padrao': unidade_harpia},
+        ]
+
+        for item in novos_desbravadores:
+            u_obj = User.objects.filter(username__iexact=item['username']).first()
+            if not u_obj:
+                u_obj = User.objects.create(username=item['username'], first_name=item['nome'])
+            u_obj.set_password(item['senha'])
+            u_obj.is_active = True
+            u_obj.save()
+
+            desb_obj = Desbravador.objects.filter(nome__iexact=item['nome']).first()
+            if not desb_obj:
+                desb_obj = Desbravador.objects.create(
+                    nome=item['nome'],
+                    unidade=item['unidade_padrao'],
+                    user=u_obj,
+                    ativo=True
+                )
+                self.stdout.write(self.style.SUCCESS(f"Desbravador '{item['nome']}' criado com login '{u_obj.username}'."))
+            else:
+                if desb_obj.user != u_obj:
+                    desb_obj.user = u_obj
+                    desb_obj.save()
+                self.stdout.write(self.style.SUCCESS(f"Conta de '{item['nome']}' vinculada/atualizada com login '{u_obj.username}'."))
+
+        # 7. Atualizar senhas dos desbravadores no padrão: animal + 3 dígitos únicos
         senhas_desbravadores = {
             'anasofia': 'aguia248',
             'arthur': 'leao715',
@@ -61,20 +93,20 @@ class Command(BaseCommand):
             'luispaulo': 'pantera457',
             'mariano': 'tubarao291',
             'renan': 'gaviao738',
+            'Nubya': 'arara123',
+            'Ramon': 'papagaio456',
         }
 
         count = 0
         for username, pwd in senhas_desbravadores.items():
-            try:
-                u = User.objects.get(username=username)
+            u = User.objects.filter(username__iexact=username).first()
+            if u:
                 u.set_password(pwd)
                 u.save()
                 count += 1
-            except User.DoesNotExist:
-                pass
         self.stdout.write(self.style.SUCCESS(f"{count} senhas de desbravadores atualizadas no banco de dados."))
 
-        # 7. Criar 3 Desbravadores de Teste para Treinamento da Diretoria (sem conta de usuário)
+        # 8. Criar 3 Desbravadores de Teste para Treinamento da Diretoria (sem conta de usuário)
         testes = ["Desbravador Teste 1", "Desbravador Teste 2", "Desbravador Teste 3"]
         for nome_t in testes:
             d_t, t_created = Desbravador.objects.get_or_create(
