@@ -91,7 +91,7 @@ class Command(BaseCommand):
             'joaoinacio': 'puma841',
             'joaolucas': 'falcao679',
             'luispaulo': 'pantera457',
-            'mariano': 'tubarao291',
+            'mariano': 'Aguia',
             'renan': 'gaviao738',
             'Nubya': 'arara123',
             'Ramon': 'papagaio456',
